@@ -1,4 +1,4 @@
-import { Paper, Table, TableBody, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
+import { FormControl, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
 import React, { useState } from 'react'
 import { StyleTableCell, StyledTableRow } from '../../../Layouts/component/customMUI/customMUI';
 
@@ -30,7 +30,41 @@ const Report = () => {
 
     return (
         <>
-
+            <FormControl size='small' sx={{ m: 1, minWidth: 200, float: "right" }}>
+                <InputLabel id="demo-simple-select-label">Loại</InputLabel>
+                <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Báo cáo loại"
+                >
+                    <MenuItem value={10}>Giảng viên</MenuItem>
+                    <MenuItem value={20}>Sinh viên</MenuItem>
+                </Select>
+            </FormControl>
+            <FormControl size='small' sx={{ m: 1, minWidth: 200, float: "right" }}>
+                <InputLabel id="demo-simple-select-label">Đơn vị</InputLabel>
+                <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Báo cáo đơn vị"
+                >
+                    <MenuItem value={10}>CNTT</MenuItem>
+                    <MenuItem value={20}>TCNH</MenuItem>
+                    <MenuItem value={30}>QTKD</MenuItem>
+                </Select>
+            </FormControl>
+            <FormControl size='small' sx={{ m: 1, minWidth: 200, float: "right" }}>
+                <InputLabel id="demo-simple-select-label">Năm</InputLabel>
+                <Select
+                    labelId="demo-simple-select-label"
+                    id="demo-simple-select"
+                    label="Báo cáo năm"
+                >
+                    <MenuItem value={10}>2023</MenuItem>
+                    <MenuItem value={20}>2024</MenuItem>
+                    <MenuItem value={30}>2025</MenuItem>
+                </Select>
+            </FormControl>
             <Paper sx={{ width: '100%', overflow: 'hidden' }}>
                 <TableContainer sx={{ maxHeight: 500 }} component={Paper}>
                     <Table stickyHeader aria-label='custom-table'>

@@ -7,28 +7,17 @@ import {
 import React from 'react'
 import { useState } from 'react';
 import { StyleTableCell, StyledTableRow } from '../../../Layouts/component/customMUI/customMUI';
-import ModalAddUser from '../../../component/modal/modalUser/ModalAddUser';
-import ModalEditUser from '../../../component/modal/modalUser/ModalEditUser';
+import ModalAddUser from './component/modalUser/ModalAddUser';
+import ModalEditUser from './component/modalUser/ModalEditUser';
+import getUser from '../../../api/getUser';
 
-function createData(id, nameUser, idUnit) {
-    return { id, nameUser, idUnit };
-}
-const rows = [
-    createData("ND01", "Nguyễn Đức Cương", "DV01"),
-    createData("ND01", "Nguyễn Đức Cương", "DV01"),
-    createData("ND01", "Nguyễn Đức Cương", "DV01"),
-    createData("ND01", "Nguyễn Đức Cương", "DV01"),
-    createData("ND01", "Nguyễn Đức Cương", "DV01"),
-    createData("ND01", "Nguyễn Đức Cương", "DV01"),
-
-]
 const updateUser = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [openAdd, setOpenAdd] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
-
-
+    const users = getUser()
+    console.log(users)
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -62,20 +51,24 @@ const updateUser = () => {
                             <TableRow>
                                 <StyleTableCell align="center">Mã người dùng</StyleTableCell>
                                 <StyleTableCell align="center">Họ và tên </StyleTableCell>
-                                <StyleTableCell align="center">Mã danh mục</StyleTableCell>
+                                <StyleTableCell align="center">Tài khoản </StyleTableCell>
+                                <StyleTableCell align="center">Mật khẩu </StyleTableCell>
+                                <StyleTableCell align="center">Mã đơn vị</StyleTableCell>
                                 <StyleTableCell align="center">Chức năng</StyleTableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
                             {(rowsPerPage > 0
-                                ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                : rows
-                            ).map((item, index) => {
+                                ? users?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                : users
+                            )?.map((user, index) => {
                                 return (
                                     <StyledTableRow key={index}>
-                                        <StyleTableCell align="center">{item.id}</StyleTableCell>
-                                        <StyleTableCell align="center">{item.nameUser}</StyleTableCell>
-                                        <StyleTableCell align="center">{item.idUnit}</StyleTableCell>
+                                        <StyleTableCell align="center">{user?.idUser}</StyleTableCell>
+                                        <StyleTableCell align="center">{user?.name}</StyleTableCell>
+                                        <StyleTableCell align="center">{user?.account}</StyleTableCell>
+                                        <StyleTableCell align="center">{user?.password}</StyleTableCell>
+                                        <StyleTableCell align="center">{user?.unit}</StyleTableCell>
                                         <StyleTableCell align="center">
                                             <IconButton color='primary' size='medium' variant="text" onClick={handleOpenEdit}><Edit /></IconButton>
                                             <IconButton color='primary' size='medium' variant="text"><Delete /></IconButton>
@@ -89,7 +82,7 @@ const updateUser = () => {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 15]}
                     component="div"
-                    count={rows.length}
+                    count={users?.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}
@@ -98,6 +91,7 @@ const updateUser = () => {
             </Paper>
             <ModalAddUser openAdd={openAdd} onCloseAdd={handleCloseAdd} />
             <ModalEditUser openEdit={openEdit} onCloseEdit={handleCloseEdit} />
+
         </>
     )
 }

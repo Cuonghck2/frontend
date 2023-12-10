@@ -24,6 +24,7 @@ const ModalAddTopic = ({ openAdd, onCloseAdd }) => {
     };
     return (
         <Modal
+            onClose={onCloseAdd}
             keepMounted
             open={openAdd}
             aria-labelledby="keep-mounted-modal-title"

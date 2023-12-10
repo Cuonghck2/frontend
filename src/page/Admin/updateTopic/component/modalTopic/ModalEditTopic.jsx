@@ -24,6 +24,7 @@ const ModalEditTopic = ({ openEdit, onCloseEdit }) => {
     };
     return (
         <Modal
+            onClose={onCloseEdit}
             keepMounted
             open={openEdit}
             aria-labelledby="keep-mounted-modal-title"

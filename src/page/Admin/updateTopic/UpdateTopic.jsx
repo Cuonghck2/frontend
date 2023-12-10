@@ -7,42 +7,17 @@ import {
 } from '@mui/material'
 import { StyleTableCell, StyledTableRow } from '../../../Layouts/component/customMUI/customMUI';
 import { useState } from 'react';
-import ModalAddTopic from '../../../component/modal/modalTopic/ModalAddTopic';
-import ModalEditTopic from '../../../component/modal/modalTopic/ModalEditTopic';
+import ModalAddTopic from './component/modalTopic/ModalAddTopic';
+import ModalEditTopic from './component/modalTopic/ModalEditTopic';
+import getTopic from '../../../api/getTopic';
 
-
-function createData(id, nameTopic, nameTeach, type, unit, timeStart, timeEnd, result) {
-    return { id, nameTopic, nameTeach, type, unit, timeStart, timeEnd, result };
-}
-
-const rows = [
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "04/12/2023", "10/12/2023", "Xuất sắc"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "04/12/2023", "10/12/2023", "Xuất sắc"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "04/12/2023", "10/12/2023", "Xuất sắc"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "04/12/2023", "10/12/2023", "Xuất sắc"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "04/12/2023", "10/12/2023", "Xuất sắc"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "04/12/2023", "10/12/2023", "Xuất sắc"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "04/12/2023", "10/12/2023", "Xuất sắc"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "04/12/2023", "10/12/2023", "Xuất sắc"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "04/12/2023", "10/12/2023", "Xuất sắc"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "04/12/2023", "10/12/2023", "Xuất sắc"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "04/12/2023", "10/12/2023", "Xuất sắc"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "04/12/2023", "10/12/2023", "Xuất sắc"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "04/12/2023", "10/12/2023", "Xuất sắc"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "04/12/2023", "10/12/2023", "Xuất sắc"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "04/12/2023", "10/12/2023", "Xuất sắc"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "04/12/2023", "10/12/2023", "Xuất sắc"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "04/12/2023", "10/12/2023", "Xuất sắc"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "04/12/2023", "10/12/2023", "Xuất sắc"),
-
-];
 const UpdateTopic = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [typeSearch, setTypeSearch] = useState('');
     const [openAdd, setOpenAdd] = useState(false);
     const [openEdit, setOpenEdit] = useState(false)
-
+    const topics = getTopic()
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -50,7 +25,6 @@ const UpdateTopic = () => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
-
     const handleChange = (event) => {
         setTypeSearch(event.target.value);
     };
@@ -105,19 +79,19 @@ const UpdateTopic = () => {
                         </TableHead>
                         <TableBody>
                             {(rowsPerPage > 0
-                                ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                : rows
-                            ).map((item, index) => {
+                                ? topics?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                : topics
+                            )?.map((topic, index) => {
                                 return (
                                     <StyledTableRow key={index}>
-                                        <StyleTableCell align="center">{item.id}</StyleTableCell>
-                                        <StyleTableCell align="center">{item.nameTopic}</StyleTableCell>
-                                        <StyleTableCell align="center">{item.nameTeach}</StyleTableCell>
-                                        <StyleTableCell align="center">{item.type}</StyleTableCell>
-                                        <StyleTableCell align="center">{item.unit}</StyleTableCell>
-                                        <StyleTableCell align="center">{item.timeStart}</StyleTableCell>
-                                        <StyleTableCell align="center">{item.timeEnd}</StyleTableCell>
-                                        <StyleTableCell align="center">{item.result}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic?.idTopic}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic?.nameTopic}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic?.nameHead}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic?.type}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic?.unit}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic?.timeStart}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic?.timeEnd}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic?.acceptanceResult}</StyleTableCell>
                                         <StyleTableCell align="center">
                                             <IconButton color='primary' size='medium' variant="text" onClick={handleOpenEdit}><Edit /></IconButton>
                                             <IconButton color='primary' size='medium' variant="text"><Delete /></IconButton>
@@ -132,7 +106,7 @@ const UpdateTopic = () => {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 15]}
                     component="div"
-                    count={rows.length}
+                    count={topics?.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}

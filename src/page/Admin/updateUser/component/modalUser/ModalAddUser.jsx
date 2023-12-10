@@ -12,26 +12,27 @@ const styleModal = {
     borderRadius: "12px",
     padding: 4,
 };
-const ModalEditUser = ({ openEdit, onCloseEdit }) => {
+const ModalAddUser = ({ openAdd, onCloseAdd }) => {
     return (
         <Modal
+            onClose={onCloseAdd}
             keepMounted
-            open={openEdit}
+            open={openAdd}
             aria-labelledby="keep-mounted-modal-title"
             aria-describedby="keep-mounted-modal-description"
         >
             <Box sx={styleModal}>
                 <Typography variant="h5" >
-                    Sửa người dùng
+                    Thêm người dùng
                 </Typography>
                 <TextField sx={{ margin: "16px 0", width: "100%" }} id="outlined-basic" label="Mã người dùng" variant="outlined" />
                 <TextField sx={{ margin: "12px 0", width: "100%" }} id="outlined-basic" label="Họ và tên" variant="outlined" />
                 <TextField sx={{ margin: "12px 0", width: "100%" }} id="outlined-basic" label="Mã danh mục" variant="outlined" />
-                <Button variant="text" sx={{ margin: "24px 0", float: "right" }} onClick={onCloseEdit}>Hủy Bỏ</Button>
-                <Button variant="contained" sx={{ margin: "24px 12px", float: "right" }}>Sửa</Button>
+                <Button variant="text" sx={{ margin: "24px 0", float: "right" }} onClick={onCloseAdd}>Hủy Bỏ</Button>
+                <Button variant="contained" sx={{ margin: "24px 12px", float: "right" }}>Thêm</Button>
             </Box>
         </Modal>
     )
 }
 
-export default ModalEditUser
+export default ModalAddUser
