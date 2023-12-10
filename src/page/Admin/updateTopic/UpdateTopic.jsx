@@ -28,7 +28,9 @@ const UpdateTopic = () => {
     const handleChange = (event) => {
         setTypeSearch(event.target.value);
     };
-    const handleOpenAdd = () => setOpenAdd(true);
+    const handleOpenAdd = () => {
+        setOpenAdd(true);
+    }
     const handleCloseAdd = () => setOpenAdd(false);
     const handleOpenEdit = () => { setOpenEdit(true) }
     const handleCloseEdit = () => { setOpenEdit(false) }
@@ -106,7 +108,7 @@ const UpdateTopic = () => {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 15]}
                     component="div"
-                    count={topics?.length}
+                    count={topics?.length || 0}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}

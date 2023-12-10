@@ -1,9 +1,10 @@
-import { configureStore } from "@reduxjs/toolkit";
-import { listTopic } from "../slice/topicSlice";
+import { configureStore } from '@reduxjs/toolkit'
+import { listTopics } from '../slice/topicSlice'
 
 const store = configureStore({
     reducer: {
-        listTopic,
-    }
+        listTopics
+    },
 })
+
 export default store

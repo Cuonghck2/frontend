@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import request from '../utils/request'
+import { useDispatch } from 'react-redux'
+import listTopics from '../slice/topicSlice'
 
 const getTopic = () => {
     const [topics, setTopics] = useState()
+    const dispatch = useDispatch()
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -13,8 +16,8 @@ const getTopic = () => {
             }
         }
         fetchData()
-    })
+    }, [])
     return topics
-}
 
+}
 export default getTopic
