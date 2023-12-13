@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Add, Delete, Edit, Search } from '@mui/icons-material'
 import {
     Button, Divider, FormControl, IconButton, InputBase, InputLabel, MenuItem, Paper,
@@ -9,7 +9,8 @@ import { StyleTableCell, StyledTableRow } from '../../../Layouts/component/custo
 import { useState } from 'react';
 import ModalAddTopic from './component/modalTopic/ModalAddTopic';
 import ModalEditTopic from './component/modalTopic/ModalEditTopic';
-import getTopic from '../../../api/getTopic';
+import { useSelector } from 'react-redux';
+import useTopic from '../../../api/useTopic';
 
 const UpdateTopic = () => {
     const [page, setPage] = useState(0);
@@ -17,7 +18,10 @@ const UpdateTopic = () => {
     const [typeSearch, setTypeSearch] = useState('');
     const [openAdd, setOpenAdd] = useState(false);
     const [openEdit, setOpenEdit] = useState(false)
-    const topics = getTopic()
+    //Lấy đề tài từ state của redux
+    const { getTopic } = useTopic()
+    getTopic()
+    const { topics } = useSelector(state => state.topics)
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -82,7 +86,7 @@ const UpdateTopic = () => {
                         <TableBody>
                             {(rowsPerPage > 0
                                 ? topics?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                : topics
+                                : topics?.topics
                             )?.map((topic, index) => {
                                 return (
                                     <StyledTableRow key={index}>

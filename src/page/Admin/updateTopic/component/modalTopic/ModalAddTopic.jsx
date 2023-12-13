@@ -1,9 +1,13 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { Box, Button, FormControl, InputLabel, MenuItem, Modal, Select, TextField, Typography } from '@mui/material';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
+import useTopic from '../../../../../api/useTopic';
+import { useDispatch, useSelector } from 'react-redux';
+import { addTopic } from '../../../../../slice/topicsSlice';
 const styleModal = {
     position: 'absolute',
     top: '50%',
@@ -17,11 +21,69 @@ const styleModal = {
 };
 
 const ModalAddTopic = ({ openAdd, onCloseAdd }) => {
-    const [type, setType] = React.useState('');
-
-    const handleChange = (event) => {
+    const dispatch = useDispatch()
+    const [idTopic, setIdTopic] = useState("")
+    const [nameTopic, setNameTopic] = useState("")
+    const [nameHead, setNameHead] = useState("")
+    const [type, setType] = useState("");
+    const [unit, setUnit] = useState("")
+    const [timeStart, setTimeStart] = useState(null)
+    const [timeEnd, setTimeEnd] = useState(null)
+    const [acceptanceResult, setAcceptanceResult] = useState("")
+    const { postTopic } = useTopic()
+    const { topics } = useSelector(state => state.topics)
+    useEffect(() => {
+        postTopic(topics)
+    }, [topics])
+    const handleChangeIdTopic = (event) => {
+        setIdTopic(event.target.value)
+    }
+    const handleChangeNameTopic = (event) => {
+        setNameTopic(event.target.value)
+    }
+    const handleChangeNameHead = (event) => {
+        setNameHead(event.target.value)
+    }
+    const handleChangeUnit = (event) => {
+        setUnit(event.target.value)
+    }
+    const handleChangeTimeStart = (date) => {
+        const formatTimeStart = dayjs(date).format("DD/MM/YYYY")
+        setTimeStart(formatTimeStart)
+    }
+    const handleChangeTimeEnd = (date) => {
+        const formatTimeEnd = dayjs(date).format("DD/MM/YYYY")
+        setTimeEnd(formatTimeEnd)
+    }
+    const handleChangeAcceptanceResult = (event) => {
+        setAcceptanceResult(event.target.value)
+    }
+    const handleChangeType = (event) => {
         setType(event.target.value);
     };
+    const handleAddTopic = () => {
+        const dataTopics = {
+            idTopic,
+            nameTopic,
+            nameHead,
+            type,
+            unit,
+            timeStart,
+            timeEnd,
+            acceptanceResult
+        }
+        dispatch(addTopic(dataTopics))
+        onCloseAdd()
+        setIdTopic("")
+        setNameTopic("")
+        setNameHead("")
+        setUnit("")
+        setType("")
+        setTimeStart(null)
+        setTimeEnd(null)
+        setAcceptanceResult("")
+    }
+
     return (
         <Modal
             onClose={onCloseAdd}
@@ -36,41 +98,41 @@ const ModalAddTopic = ({ openAdd, onCloseAdd }) => {
                 </Typography>
                 <div className='flex items-center justify-around my-3'>
                     <div className='mx-4'>
-                        <TextField sx={{ margin: "12px 0", width: "100%" }} id="outlined-basic" label="Mã đề tài" variant="outlined" />
-                        <TextField sx={{ margin: "12px 0", width: "100%" }} id="outlined-basic" label="Tên đề tài" variant="outlined" />
-                        <TextField sx={{ margin: "12px 0", width: "100%" }} id="outlined-basic" label="Tên chủ nhiệm" variant="outlined" />
+                        <TextField onChange={handleChangeIdTopic} value={idTopic} sx={{ margin: "12px 0", width: "100%" }} id="outlined-basic" label="Mã đề tài" variant="outlined" />
+                        <TextField onChange={handleChangeNameTopic} value={nameTopic} sx={{ margin: "12px 0", width: "100%" }} id="outlined-basic" label="Tên đề tài" variant="outlined" />
+                        <TextField onChange={handleChangeNameHead} value={nameHead} sx={{ margin: "12px 0", width: "100%" }} id="outlined-basic" label="Tên chủ nhiệm" variant="outlined" />
                         <FormControl sx={{ margin: "12px 0", width: "100%" }}>
                             <InputLabel id="demo-simple-select-label">Loại</InputLabel>
                             <Select
                                 labelId="demo-simple-select-label"
                                 id="demo-simple-select"
+                                defaultValue=""
                                 value={type}
                                 label="Loại"
-                                onChange={handleChange}
+                                onChange={handleChangeType}
                             >
-                                <MenuItem value={10}>Giảng viên</MenuItem>
-                                <MenuItem value={20}>Sinh viên</MenuItem>
+                                <MenuItem value={"Giảng viên"}>Giảng viên</MenuItem>
+                                <MenuItem value={"Sinh viên"}>Sinh viên</MenuItem>
                             </Select>
                         </FormControl>
                     </div>
                     <div className='mx-4'>
-                        <TextField sx={{ margin: "12px 0", width: "100%" }} id="outlined-basic" label="Đơn vị" variant="outlined" />
+                        <TextField onChange={handleChangeUnit} value={unit} sx={{ margin: "12px 0", width: "100%" }} id="outlined-basic" label="Đơn vị" variant="outlined" />
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DemoContainer sx={{ padding: "12px 0", width: "100%", }} components={['DatePicker']}>
-                                <DatePicker label="Bắt đầu" />
+                                <DatePicker format='DD/MM/YYYY' onChange={handleChangeTimeStart} value={timeStart} label="Bắt đầu" />
                             </DemoContainer>
                         </LocalizationProvider>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DemoContainer sx={{ padding: "12px 0", width: "100%" }} components={['DatePicker']}>
-                                <DatePicker label="Kết thúc" />
+                                <DatePicker format='DD/MM/YYYY' onChange={handleChangeTimeEnd} value={timeEnd} label="Kết thúc" />
                             </DemoContainer>
                         </LocalizationProvider>
-
-                        <TextField sx={{ margin: "12px 0", width: "100%" }} id="outlined-basic" label="Kết quả nghiệm thu" variant="outlined" />
+                        <TextField onChange={handleChangeAcceptanceResult} value={acceptanceResult} sx={{ margin: "12px 0", width: "100%" }} id="outlined-basic" label="Kết quả nghiệm thu" variant="outlined" />
                     </div>
                 </div>
                 <Button variant="text" sx={{ margin: "24px 0", float: "right" }} onClick={onCloseAdd}>Hủy Bỏ</Button>
-                <Button variant="contained" sx={{ margin: "24px 12px", float: "right" }}>Thêm</Button>
+                <Button onClick={handleAddTopic} variant="contained" sx={{ margin: "24px 12px", float: "right" }}>Thêm</Button>
             </Box>
         </Modal>
     )

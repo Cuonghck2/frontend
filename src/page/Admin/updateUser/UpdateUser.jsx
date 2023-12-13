@@ -17,7 +17,6 @@ const updateUser = () => {
     const [openAdd, setOpenAdd] = useState(false);
     const [openEdit, setOpenEdit] = useState(false);
     const users = getUser()
-    console.log(users)
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
