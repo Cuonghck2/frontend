@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { Add, Delete, Edit, Search } from '@mui/icons-material'
 import {
     Button, Divider, FormControl, IconButton, InputBase, InputLabel, MenuItem, Paper,
@@ -19,8 +19,6 @@ const UpdateTopic = () => {
     const [openAdd, setOpenAdd] = useState(false);
     const [openEdit, setOpenEdit] = useState(false)
     //Lấy đề tài từ state của redux
-    const { getTopic } = useTopic()
-    getTopic()
     const { topics } = useSelector(state => state.topics)
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -90,14 +88,14 @@ const UpdateTopic = () => {
                             )?.map((topic, index) => {
                                 return (
                                     <StyledTableRow key={index}>
-                                        <StyleTableCell align="center">{topic?.idTopic}</StyleTableCell>
-                                        <StyleTableCell align="center">{topic?.nameTopic}</StyleTableCell>
-                                        <StyleTableCell align="center">{topic?.nameHead}</StyleTableCell>
-                                        <StyleTableCell align="center">{topic?.type}</StyleTableCell>
-                                        <StyleTableCell align="center">{topic?.unit}</StyleTableCell>
-                                        <StyleTableCell align="center">{topic?.timeStart}</StyleTableCell>
-                                        <StyleTableCell align="center">{topic?.timeEnd}</StyleTableCell>
-                                        <StyleTableCell align="center">{topic?.acceptanceResult}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic?.data?.idTopic}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic?.data?.nameTopic}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic?.data?.nameHead}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic?.data?.type}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic?.data?.unit}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic?.data?.timeStart}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic?.data?.timeEnd}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic?.data?.acceptanceResult}</StyleTableCell>
                                         <StyleTableCell align="center">
                                             <IconButton color='primary' size='medium' variant="text" onClick={handleOpenEdit}><Edit /></IconButton>
                                             <IconButton color='primary' size='medium' variant="text"><Delete /></IconButton>

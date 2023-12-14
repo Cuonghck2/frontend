@@ -9,14 +9,14 @@ const useTopic = () => {
         useEffect(() => {
             const fetchData = async () => {
                 try {
-                    const res = await request.get("/topic.json")
+                    const res = await request("/topic.json")
                     dispatch(listTopics(Object.values(res?.data)))
                 } catch (error) {
                     console.log(error)
                 }
             }
             fetchData()
-        }, [dispatch])
+        }, [])
     }
 
     const postTopic = async (data) => {

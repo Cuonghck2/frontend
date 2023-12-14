@@ -30,11 +30,7 @@ const ModalAddTopic = ({ openAdd, onCloseAdd }) => {
     const [timeStart, setTimeStart] = useState(null)
     const [timeEnd, setTimeEnd] = useState(null)
     const [acceptanceResult, setAcceptanceResult] = useState("")
-    const { postTopic } = useTopic()
-    const { topics } = useSelector(state => state.topics)
-    useEffect(() => {
-        postTopic(topics)
-    }, [topics])
+    const { postTopic, getTopic } = useTopic()
     const handleChangeIdTopic = (event) => {
         setIdTopic(event.target.value)
     }
@@ -61,7 +57,8 @@ const ModalAddTopic = ({ openAdd, onCloseAdd }) => {
     const handleChangeType = (event) => {
         setType(event.target.value);
     };
-    const handleAddTopic = () => {
+
+    const handleAddTopic = async () => {
         const dataTopics = {
             idTopic,
             nameTopic,
@@ -71,18 +68,25 @@ const ModalAddTopic = ({ openAdd, onCloseAdd }) => {
             timeStart,
             timeEnd,
             acceptanceResult
-        }
+        };
         dispatch(addTopic(dataTopics))
-        onCloseAdd()
-        setIdTopic("")
-        setNameTopic("")
-        setNameHead("")
-        setUnit("")
-        setType("")
-        setTimeStart(null)
-        setTimeEnd(null)
-        setAcceptanceResult("")
-    }
+        setIdTopic("");
+        setNameTopic("");
+        setNameHead("");
+        setUnit("");
+        setType("");
+        setTimeStart(null);
+        setTimeEnd(null);
+        setAcceptanceResult("");
+        onCloseAdd();
+        try {
+            await postTopic(dataTopics);
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    getTopic()
+
 
     return (
         <Modal
