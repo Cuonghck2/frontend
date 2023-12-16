@@ -1,12 +1,11 @@
 /*! normalize.css v8.0.1 | MIT License | github.com/necolas/normalize.css */
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
-
 @import url("@fontsource/roboto/300.css");
 @import url("@fontsource/roboto/400.css");
 @import url("@fontsource/roboto/500.css");
 @import url("@fontsource/roboto/700.css");
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 * {
   margin: 0;

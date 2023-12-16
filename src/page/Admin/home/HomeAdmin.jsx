@@ -1,12 +1,11 @@
-
 import React from 'react'
-import request from '../../../utils/request'
 
 const HomeAdmin = () => {
 
     return (
-        <div style={{ cursor: "pointer" }} onClick={postTopic}>
+        <div style={{ cursor: "pointer" }} >
             HomeAdmin
+
         </div>
     )
 }

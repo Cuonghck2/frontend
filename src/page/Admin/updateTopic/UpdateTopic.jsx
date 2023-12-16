@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { Add, Delete, Edit, Search } from '@mui/icons-material'
 import {
     Button, Divider, FormControl, IconButton, InputBase, InputLabel, MenuItem, Paper,
@@ -7,19 +7,33 @@ import {
 } from '@mui/material'
 import { StyleTableCell, StyledTableRow } from '../../../Layouts/component/customMUI/customMUI';
 import { useState } from 'react';
-import ModalAddTopic from './component/modalTopic/ModalAddTopic';
-import ModalEditTopic from './component/modalTopic/ModalEditTopic';
-import { useSelector } from 'react-redux';
-import useTopic from '../../../api/useTopic';
-
+import { useSelector, useDispatch } from 'react-redux';
+import request from '../../../utils/request'
+import { listTopics } from '../../../slice/topicsSlice'
+import ModalTopic from './component/modalTopic/ModalTopic';
 const UpdateTopic = () => {
+    const [modalData, setModalData] = useState(null);
+    const [modalName, setModalName] = useState("");
+
+    const [modalMode, setModalMode] = useState("add");
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [typeSearch, setTypeSearch] = useState('');
-    const [openAdd, setOpenAdd] = useState(false);
-    const [openEdit, setOpenEdit] = useState(false)
-    //Lấy đề tài từ state của redux
+    const [openModal, setOpenModal] = useState(false);
+    const dispatch = useDispatch()
     const { topics } = useSelector(state => state.topics)
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const res = await request("/topic.json")
+                dispatch(listTopics(Object.values(res?.data)))
+            } catch (error) {
+                console.log(error)
+            }
+        }
+        fetchData()
+    }, [])
+
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
@@ -30,15 +44,20 @@ const UpdateTopic = () => {
     const handleChange = (event) => {
         setTypeSearch(event.target.value);
     };
-    const handleOpenAdd = () => {
-        setOpenAdd(true);
+    const handleOpenModal = () => {
+        setOpenModal(true);
+
     }
-    const handleCloseAdd = () => setOpenAdd(false);
-    const handleOpenEdit = () => { setOpenEdit(true) }
-    const handleCloseEdit = () => { setOpenEdit(false) }
+    const handleCloseModal = () => {
+        setOpenModal(false);
+    }
     return (
         <>
-            <Button variant="contained" startIcon={<Add />} onClick={handleOpenAdd}>Thêm</Button>
+            <Button variant="contained" startIcon={<Add />} onClick={() => {
+                setModalMode("add")
+                setModalName("Thêm đề tài")
+                handleOpenModal()
+            }}>Thêm</Button>
             <Paper component="form" sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 300, float: "right", marginBottom: "16px" }}>
                 <InputBase
                     sx={{ ml: 1, flex: 1 }}
@@ -81,29 +100,34 @@ const UpdateTopic = () => {
                                 <StyleTableCell align="center">Chức năng</StyleTableCell>
                             </TableRow>
                         </TableHead>
-                        <TableBody>
-                            {(rowsPerPage > 0
-                                ? topics?.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                : topics?.topics
-                            )?.map((topic, index) => {
+                        <TableBody >
+                            {topics.length ? (rowsPerPage > 0
+                                ? topics.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                : topics.topics
+                            ).map((topic, index) => {
                                 return (
                                     <StyledTableRow key={index}>
-                                        <StyleTableCell align="center">{topic?.data?.idTopic}</StyleTableCell>
-                                        <StyleTableCell align="center">{topic?.data?.nameTopic}</StyleTableCell>
-                                        <StyleTableCell align="center">{topic?.data?.nameHead}</StyleTableCell>
-                                        <StyleTableCell align="center">{topic?.data?.type}</StyleTableCell>
-                                        <StyleTableCell align="center">{topic?.data?.unit}</StyleTableCell>
-                                        <StyleTableCell align="center">{topic?.data?.timeStart}</StyleTableCell>
-                                        <StyleTableCell align="center">{topic?.data?.timeEnd}</StyleTableCell>
-                                        <StyleTableCell align="center">{topic?.data?.acceptanceResult}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.idTopic}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.nameTopic}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.nameHead}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.type}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.unit}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.timeStart}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.timeEnd}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.acceptanceResult}</StyleTableCell>
                                         <StyleTableCell align="center">
-                                            <IconButton color='primary' size='medium' variant="text" onClick={handleOpenEdit}><Edit /></IconButton>
+                                            <IconButton color='primary' size='medium' variant="text" onClick={() => {
+                                                setModalMode("update")
+                                                setModalName("Sửa đề tài")
+                                                setModalData(topic.data)
+                                                handleOpenModal()
+                                            }}><Edit /></IconButton>
                                             <IconButton color='primary' size='medium' variant="text"><Delete /></IconButton>
                                         </StyleTableCell>
 
                                     </StyledTableRow>
                                 )
-                            })}
+                            }) : <></>}
                         </TableBody>
                     </Table>
                 </TableContainer>
@@ -117,8 +141,7 @@ const UpdateTopic = () => {
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </Paper>
-            <ModalAddTopic openAdd={openAdd} onCloseAdd={handleCloseAdd} />
-            <ModalEditTopic openEdit={openEdit} onCloseEdit={handleCloseEdit} />
+            <ModalTopic openModal={openModal} onCloseModal={handleCloseModal} modalMode={modalMode} modalName={modalName} modalData={modalMode === "update" ? modalData : null} />
         </>
     )
 }

@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, current } from "@reduxjs/toolkit";
 
 
 const topicsSlice = createSlice({
@@ -11,6 +11,7 @@ const topicsSlice = createSlice({
             state.topics = action.payload
         },
         addTopic: (state, action) => {
+            console.log(current(state))
             state.topics.push(action.payload)
         }
     }
