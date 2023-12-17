@@ -7,7 +7,7 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import useTopic from '../../../../../api/useTopic';
 import { useDispatch } from 'react-redux';
-import { addTopic } from '../../../../../slice/topicsSlice';
+import { addTopic, updateTopic } from '../../../../../slice/topicsSlice';
 const styleModal = {
     position: 'absolute',
     top: '50%',
@@ -22,7 +22,7 @@ const styleModal = {
 
 const ModalTopic = ({ openModal, onCloseModal, modalMode, modalName, modalData }) => {
     const dispatch = useDispatch()
-    const { postTopic } = useTopic()
+    const { postTopic, putTopic } = useTopic()
     const [formData, setFormData] = useState({
         idTopic: "",
         nameTopic: "",
@@ -96,10 +96,23 @@ const ModalTopic = ({ openModal, onCloseModal, modalMode, modalName, modalData }
                 acceptanceResult
             }
         }))
-        setFormData("")
-        onCloseAdd();
+        setFormData({
+            idTopic: "",
+            nameTopic: "",
+            nameHead: "",
+            type: "",
+            unit: "",
+            timeStart: null,
+            timeEnd: null,
+            acceptanceResult: ""
+        })
+        onCloseModal();
         postTopic(dataTopics);
     };
+    const handleEditTopic = () => {
+        dispatch(updateTopic({ id: modalData?.idTopic, data: formData }))
+        onCloseModal()
+    }
     return (
         <Modal
             onClose={onCloseModal}
@@ -151,7 +164,7 @@ const ModalTopic = ({ openModal, onCloseModal, modalMode, modalName, modalData }
                 </div>
                 <Button variant="text" sx={{ margin: "24px 0", float: "right" }} onClick={onCloseModal}>Hủy Bỏ</Button>
                 {modalMode === "add" && <Button onClick={handleAddTopic} variant="contained" sx={{ margin: "24px 12px", float: "right" }}>Thêm</Button>}
-                {modalMode === "update" && <Button onClick={handleAddTopic} variant="contained" sx={{ margin: "24px 12px", float: "right" }}>Sửa</Button>}
+                {modalMode === "update" && <Button onClick={handleEditTopic} variant="contained" sx={{ margin: "24px 12px", float: "right" }}>Sửa</Button>}
             </Box>
         </Modal>
     )

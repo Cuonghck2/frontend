@@ -3,13 +3,18 @@ import request from '../utils/request'
 const useTopic = () => {
     const postTopic = async (data) => {
         try {
-            const res = await request.post("/topic.json", { data })
-            return res
+            await request.post("/topic.json", { data })
         } catch (error) {
             console.log(error)
         }
-
     }
-    return { postTopic }
+    const putTopic = async (data) => {
+        try {
+            await request.put("/topic.json", { data })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+    return { postTopic, putTopic }
 }
 export default useTopic
