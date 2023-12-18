@@ -8,13 +8,21 @@ const useTopic = () => {
             console.log(error)
         }
     }
-    const putTopic = async (data) => {
+    const putTopic = async (id, data) => {
         try {
-            await request.put("/topic.json", { data })
+            await request.put(`/topic/${id}.json`, { data })
         } catch (error) {
             console.log(error)
         }
     }
-    return { postTopic, putTopic }
+    const deleTopic = async (id) => {
+        try {
+            await request.delete(`/topic/${id}.json`)
+        } catch (error) {
+            console.log(error)
+
+        }
+    }
+    return { postTopic, putTopic, deleTopic }
 }
 export default useTopic

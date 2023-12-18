@@ -38,14 +38,14 @@ const ModalTopic = ({ openModal, onCloseModal, modalMode, modalName, modalData }
         // handle update data
         if (modalData) {
             setFormData({
-                idTopic: modalData.idTopic,
-                nameTopic: modalData.nameTopic,
-                nameHead: modalData.nameHead,
-                type: modalData.type,
-                unit: modalData.unit,
-                timeStart: modalData.timeStart,
-                timeEnd: modalData.timeEnd,
-                acceptanceResult: modalData.acceptanceResult
+                idTopic: modalData.data.data.idTopic,
+                nameTopic: modalData.data.data.nameTopic,
+                nameHead: modalData.data.data.nameHead,
+                type: modalData.data.data.type,
+                unit: modalData.data.data.unit,
+                timeStart: modalData.data.data.timeStart,
+                timeEnd: modalData.data.data.timeEnd,
+                acceptanceResult: modalData.data.data.acceptanceResult
             })
         }
     }, [modalData])
@@ -85,6 +85,7 @@ const ModalTopic = ({ openModal, onCloseModal, modalMode, modalName, modalData }
             acceptanceResult
         };
         dispatch(addTopic({
+            id: modalData?.id,
             data: {
                 idTopic,
                 nameTopic,
@@ -110,7 +111,20 @@ const ModalTopic = ({ openModal, onCloseModal, modalMode, modalName, modalData }
         postTopic(dataTopics);
     };
     const handleEditTopic = () => {
-        dispatch(updateTopic({ id: modalData?.idTopic, data: formData }))
+        dispatch(updateTopic({
+            id: modalData?.id,
+            data: {
+                idTopic,
+                nameTopic,
+                nameHead,
+                type,
+                unit,
+                timeStart,
+                timeEnd,
+                acceptanceResult
+            }
+        }))
+        putTopic(modalData?.id, formData)
         onCloseModal()
     }
     return (

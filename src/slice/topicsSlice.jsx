@@ -14,15 +14,25 @@ const topicsSlice = createSlice({
             state.topics.push(action.payload)
         },
         updateTopic: (state, action) => {
-            const updatedTopic = action.payload;
-            const index = state.topics.findIndex((item) => item.idTopic === updatedTopic.id);
+            let findData = state.topics.find((item) => {
+                return item.id === action.payload.id
+            });
+            if (findData) {
+                findData.data.data = action.payload.data;
+            }
+        },
+        deleteTopic: (state, action) => {
+            let index = state.topics.findIndex((item) => {
+                return item.id === action.payload
+            });
             if (index !== -1) {
-                state.topics[index] = updatedTopic;
+                state.topics.splice(index, 1)
             }
         }
+
 
     }
 })
 
-export const { listTopics, addTopic, updateTopic } = topicsSlice.actions
+export const { listTopics, addTopic, updateTopic, deleteTopic } = topicsSlice.actions
 export default topicsSlice.reducer

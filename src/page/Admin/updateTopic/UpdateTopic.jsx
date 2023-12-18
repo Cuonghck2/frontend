@@ -9,30 +9,43 @@ import { StyleTableCell, StyledTableRow } from '../../../Layouts/component/custo
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import request from '../../../utils/request'
-import { listTopics } from '../../../slice/topicsSlice'
+import { deleteTopic, listTopics } from '../../../slice/topicsSlice'
 import ModalTopic from './component/modalTopic/ModalTopic';
+import useTopic from '../../../api/useTopic';
 const UpdateTopic = () => {
     const [modalData, setModalData] = useState(null);
     const [modalName, setModalName] = useState("");
-
     const [modalMode, setModalMode] = useState("add");
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [typeSearch, setTypeSearch] = useState('');
     const [openModal, setOpenModal] = useState(false);
     const dispatch = useDispatch()
+    const { deleTopic } = useTopic()
     const { topics } = useSelector(state => state.topics)
     useEffect(() => {
         const fetchData = async () => {
             try {
                 const res = await request("/topic.json")
-                dispatch(listTopics(Object.values(res?.data)))
+                const resData = Object.values(res.data)
+                const keyData = Object.keys(res.data)
+                const newData = keyData.map((ele, index) => {
+                    return {
+                        id: ele,
+                        data: resData[index]
+                    }
+                })
+                dispatch(listTopics(newData))
             } catch (error) {
                 console.log(error)
             }
         }
         fetchData()
     }, [])
+    const handleDeleteTopic = (id) => {
+        dispatch(deleteTopic(id))
+        deleTopic(id)
+    }
 
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
@@ -107,22 +120,22 @@ const UpdateTopic = () => {
                             ).map((topic, index) => {
                                 return (
                                     <StyledTableRow key={index}>
-                                        <StyleTableCell align="center">{topic.data.idTopic}</StyleTableCell>
-                                        <StyleTableCell align="center">{topic.data.nameTopic}</StyleTableCell>
-                                        <StyleTableCell align="center">{topic.data.nameHead}</StyleTableCell>
-                                        <StyleTableCell align="center">{topic.data.type}</StyleTableCell>
-                                        <StyleTableCell align="center">{topic.data.unit}</StyleTableCell>
-                                        <StyleTableCell align="center">{topic.data.timeStart}</StyleTableCell>
-                                        <StyleTableCell align="center">{topic.data.timeEnd}</StyleTableCell>
-                                        <StyleTableCell align="center">{topic.data.acceptanceResult}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.data?.idTopic}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.data?.nameTopic}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.data?.nameHead}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.data?.type}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.data?.unit}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.data?.timeStart}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.data?.timeEnd}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.data?.acceptanceResult}</StyleTableCell>
                                         <StyleTableCell align="center">
                                             <IconButton color='primary' size='medium' variant="text" onClick={() => {
                                                 setModalMode("update")
                                                 setModalName("Sửa đề tài")
-                                                setModalData(topic.data)
+                                                setModalData(topic)
                                                 handleOpenModal()
                                             }}><Edit /></IconButton>
-                                            <IconButton color='primary' size='medium' variant="text"><Delete /></IconButton>
+                                            <IconButton color='primary' size='medium' variant="text" onClick={() => { handleDeleteTopic(topic?.id) }}><Delete /></IconButton>
                                         </StyleTableCell>
 
                                     </StyledTableRow>
