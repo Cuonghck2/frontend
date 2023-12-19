@@ -9,9 +9,14 @@ const topicsSlice = createSlice({
     reducers: {
         listTopics: (state, action) => {
             state.topics = action.payload
+
         },
         addTopic: (state, action) => {
-            state.topics.push(action.payload)
+            const data = action.payload
+            const newData = {
+                data: data
+            }
+            state.topics.push(newData)
         },
         updateTopic: (state, action) => {
             let findData = state.topics.find((item) => {
