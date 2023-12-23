@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useMemo } from 'react'
 import { Add, Delete, Edit, Search } from '@mui/icons-material'
 import {
     Button, Divider, FormControl, IconButton, InputBase, InputLabel, MenuItem, Paper,
@@ -14,15 +14,17 @@ import ModalTopic from './component/modalTopic/ModalTopic';
 import useTopic from '../../../api/useTopic';
 const UpdateTopic = () => {
     const [modalData, setModalData] = useState(null);
+    const { topics } = useSelector(state => state.topics)
     const [modalName, setModalName] = useState("");
     const [modalMode, setModalMode] = useState("add");
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [typeSearch, setTypeSearch] = useState('');
+    const [searchResult, setSearchResult] = useState([])
+    const [searchValue, setSearchValue] = useState('')
     const [openModal, setOpenModal] = useState(false);
     const dispatch = useDispatch()
     const { deleTopic } = useTopic()
-    const { topics } = useSelector(state => state.topics)
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -46,15 +48,25 @@ const UpdateTopic = () => {
         dispatch(deleteTopic(id))
         deleTopic(id)
     }
-
     const handleChangePage = (event, newPage) => {
         setPage(newPage);
     };
+    useEffect(() => {
+        if (typeSearch === "Mã đề tài") {
+            setSearchResult(topics.filter((topic) => topic.data.data?.idTopic.includes(searchValue)));
+        } else if (typeSearch === "Tên đề tài") {
+            setSearchResult(topics.filter((topic) => topic.data.data?.nameTopic.includes(searchValue)));
+        } else if (typeSearch === "Tên chủ nhiệm") {
+            setSearchResult(topics.filter((topic) => topic.data.data?.nameHead.includes(searchValue)));
+        } else {
+            setSearchResult(topics);
+        }
+    }, [topics, searchValue, typeSearch]);
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
-    const handleChange = (event) => {
+    const handleChangeType = (event) => {
         setTypeSearch(event.target.value);
     };
     const handleOpenModal = () => {
@@ -73,15 +85,12 @@ const UpdateTopic = () => {
             }}>Thêm</Button>
             <Paper component="form" sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 300, float: "right", marginBottom: "16px" }}>
                 <InputBase
-                    sx={{ ml: 1, flex: 1 }}
+                    sx={{ ml: 1, flex: 1, p: '6px' }}
                     placeholder="Nhập từ khóa để tìm kiếm"
                     inputProps={{ 'aria-label': 'search' }}
+                    value={searchValue}
+                    onChange={(e) => { setSearchValue(e.target.value) }}
                 />
-                <Divider sx={{ height: 28, m: 0.5 }} orientation="vertical" />
-
-                <IconButton type="button" sx={{ p: '10px' }} aria-label="search">
-                    <Search />
-                </IconButton>
             </Paper>
             <FormControl size='small' sx={{ m: 1, minWidth: 200, float: "right" }}>
                 <InputLabel id="demo-simple-select-label">Tìm Kiếm</InputLabel>
@@ -90,11 +99,11 @@ const UpdateTopic = () => {
                     id="demo-simple-select"
                     value={typeSearch}
                     label="Tìm kiếm"
-                    onChange={handleChange}
+                    onChange={handleChangeType}
                 >
-                    <MenuItem value={10}>Mã đề tài</MenuItem>
-                    <MenuItem value={20}>Tên đề tài</MenuItem>
-                    <MenuItem value={30}>Tên chủ nhiệm</MenuItem>
+                    <MenuItem value={"Mã đề tài"}>Mã đề tài</MenuItem>
+                    <MenuItem value={"Tên đề tài"}>Tên đề tài</MenuItem>
+                    <MenuItem value={"Tên chủ nhiệm"}>Tên chủ nhiệm</MenuItem>
                 </Select>
             </FormControl>
             <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -114,10 +123,11 @@ const UpdateTopic = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody >
-                            {topics.length ? (rowsPerPage > 0
-                                ? topics.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            {searchResult.length ? (rowsPerPage > 0
+                                ? searchResult.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 : topics.topics
                             ).map((topic, index) => {
+                                console.log(topic)
                                 return (
                                     <StyledTableRow key={index}>
                                         <StyleTableCell align="center">{topic.data.data?.idTopic}</StyleTableCell>

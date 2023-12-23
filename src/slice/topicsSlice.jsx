@@ -34,8 +34,6 @@ const topicsSlice = createSlice({
                 state.topics.splice(index, 1)
             }
         }
-
-
     }
 })
 

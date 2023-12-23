@@ -24,6 +24,8 @@ const ModalTopic = ({ openModal, onCloseModal, modalMode, modalName, modalData }
     const dispatch = useDispatch()
     const { postTopic, putTopic } = useTopic()
     const [emptyError, setEmptyError] = useState(null);
+    const [dateError, setDateError] = useState(null);
+
     const [formData, setFormData] = useState({
         idTopic: "",
         nameTopic: "",
@@ -84,8 +86,6 @@ const ModalTopic = ({ openModal, onCloseModal, modalMode, modalName, modalData }
             timeEnd,
             acceptanceResult
         };
-
-
         if (
             !idTopic ||
             !nameTopic ||
@@ -93,11 +93,13 @@ const ModalTopic = ({ openModal, onCloseModal, modalMode, modalName, modalData }
             !type ||
             !unit ||
             !acceptanceResult
-            // ||
-            // !timeStart ||
-            // !timeEnd
+            ||
+            !timeStart ||
+            !timeEnd
         ) {
             setEmptyError("Không được để trống!");
+        } else if (timeEnd < timeStart) {
+            setDateError("Ngày bắt đầu phải nhỏ hơn ngày kết thúc!")
         } else {
             dispatch(addTopic({
                 data: {
@@ -154,7 +156,8 @@ const ModalTopic = ({ openModal, onCloseModal, modalMode, modalName, modalData }
                 <Typography variant="h5" sx={{ marginBottom: "15px" }} >
                     {modalName}
                 </Typography>
-                {emptyError && <span className='m-5 text-red-500'>Vui lòng nhập đầy đủ thông tin*</span>}
+                {emptyError && !dateError && <span className='m-5 text-red-500'>{emptyError}</span>}
+                {dateError && <span className='m-5 text-red-500'>{dateError}</span>}
                 <div className='flex items-center justify-around my-3'>
                     <div className='mx-4'>
                         <TextField name='idTopic' onChange={handleChange} value={idTopic} sx={{ margin: "12px 0 0 0", width: "100%" }} id="outlined-basic" label="Mã đề tài" variant="outlined" />
@@ -181,12 +184,12 @@ const ModalTopic = ({ openModal, onCloseModal, modalMode, modalName, modalData }
                         <TextField name='unit' onChange={handleChange} value={unit} sx={{ margin: "12px 0 0 0", width: "100%" }} id="outlined-basic" label="Đơn vị" variant="outlined" />
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DemoContainer sx={{ padding: "12px 0 0 0", width: "100%", }} components={['DatePicker']}>
-                                <DatePicker format='DD/MM/YYYY' onChange={handleChangeTimeStart} value={timeStart} label="Bắt đầu" />
+                                <DatePicker disablePast onChange={handleChangeTimeStart} value={timeStart} label="Bắt đầu" />
                             </DemoContainer>
                         </LocalizationProvider>
                         <LocalizationProvider dateAdapter={AdapterDayjs}>
                             <DemoContainer sx={{ padding: "12px 0 0 0", width: "100%" }} components={['DatePicker']}>
-                                <DatePicker format='DD/MM/YYYY' onChange={handleChangeTimeEnd} value={timeEnd} label="Kết thúc" />
+                                <DatePicker disablePast onChange={handleChangeTimeEnd} value={timeEnd} label="Kết thúc" />
                             </DemoContainer>
                         </LocalizationProvider>
                         <TextField name='acceptanceResult' onChange={handleChange} value={acceptanceResult} sx={{ margin: "12px 0 0 0", width: "100%" }} id="outlined-basic" label="Kết quả nghiệm thu" variant="outlined" />
