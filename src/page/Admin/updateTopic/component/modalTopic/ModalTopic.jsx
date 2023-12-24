@@ -97,7 +97,7 @@ const ModalTopic = ({ openModal, onCloseModal, modalMode, modalName, modalData }
             !timeStart ||
             !timeEnd
         ) {
-            setEmptyError("Không được để trống!");
+            setEmptyError("Vui lòng nhập đầy đủ thông tin!");
         } else if (timeEnd < timeStart) {
             setDateError("Ngày bắt đầu phải nhỏ hơn ngày kết thúc!")
         } else {
