@@ -1,7 +1,8 @@
-import { Add, Delete, Edit, Search } from '@mui/icons-material'
+import { Add, BackHand, Delete, Edit, Search } from '@mui/icons-material'
 import {
+    Backdrop,
     Box,
-    Button, Divider, IconButton, InputBase, Modal, Paper,
+    Button, CircularProgress, Divider, IconButton, InputBase, Modal, Paper,
     Table, TableBody, TableContainer,
     TableHead, TablePagination, TableRow, Typography
 } from '@mui/material'
@@ -27,6 +28,7 @@ const styleModal = {
 const updateUser = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [isLoading, setIsLoading] = useState(true)
     const [openModal, setOpenModal] = useState(false);
     const [modalMode, setModalMode] = useState("add");
     const [modalName, setModalName] = useState("")
@@ -38,6 +40,7 @@ const updateUser = () => {
     useEffect(() => {
         const fetchData = async () => {
             try {
+                setIsLoading(true)
                 const res = await request("/users.json")
                 const resData = Object.values(res?.data);
                 const resKey = Object.keys(res?.data);
@@ -52,6 +55,8 @@ const updateUser = () => {
                 dispatch(listUsers(newData))
             } catch (error) {
                 console.log(error)
+            } finally {
+                setIsLoading(false)
             }
         }
         fetchData()
@@ -72,6 +77,24 @@ const updateUser = () => {
     const handleCloseModal = () => setOpenModal(false);
     return (
         <>
+            {isLoading && <Backdrop
+                sx={{
+                    zIndex: (theme) => theme.zIndex.drawer + 1,
+                    color: "#fff",
+                }}
+                open={true}
+            >
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                    }}
+                >
+                    <CircularProgress color="inherit" />
+
+                </Box>
+            </Backdrop>}
             <Button variant="contained" startIcon={<Add />} onClick={() => {
                 handleOpenModal()
                 setModalName("Thêm người dùng")

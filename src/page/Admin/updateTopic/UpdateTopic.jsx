@@ -1,8 +1,9 @@
 import React, { useEffect, useMemo } from 'react'
 import { Add, Delete, Edit, Search } from '@mui/icons-material'
 import {
+    Backdrop,
     Box,
-    Button, Divider, FormControl, IconButton, InputBase, InputLabel, MenuItem, Modal, Paper,
+    Button, CircularProgress, Divider, FormControl, IconButton, InputBase, InputLabel, MenuItem, Modal, Paper,
     Select, Table, TableBody, TableContainer,
     TableHead, TablePagination, TableRow, Typography
 } from '@mui/material'
@@ -25,11 +26,13 @@ const UpdateTopic = () => {
     const [searchValue, setSearchValue] = useState('')
     const [openModal, setOpenModal] = useState(false);
     const [confirmDel, setConfirmDel] = useState(false)
+    const [isLoading, setIsLoading] = useState(true);
     const dispatch = useDispatch()
     const { deleTopic } = useTopic()
     useEffect(() => {
         const fetchData = async () => {
             try {
+                setIsLoading(true);
                 const res = await request("/topic.json")
                 const resData = Object.values(res.data)
                 const keyData = Object.keys(res.data)
@@ -42,7 +45,10 @@ const UpdateTopic = () => {
                 dispatch(listTopics(newData))
             } catch (error) {
                 console.log(error)
+            } finally {
+                setIsLoading(false);
             }
+
         }
         fetchData()
     }, [])
@@ -86,6 +92,23 @@ const UpdateTopic = () => {
     }
     return (
         <>
+            {isLoading && <Backdrop
+                sx={{
+                    zIndex: (theme) => theme.zIndex.drawer + 1,
+                    color: "#fff",
+                }}
+                open={true}
+            >
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                    }}
+                >
+                    <CircularProgress color="inherit" />
+                </Box>
+            </Backdrop>}
             <Button variant="contained" startIcon={<Add />} onClick={() => {
                 setModalMode("add")
                 setModalName("Thêm đề tài")
@@ -137,6 +160,7 @@ const UpdateTopic = () => {
                             ).map((topic, index) => {
                                 return (
                                     <StyledTableRow key={index}>
+
                                         <StyleTableCell align="center">{topic.data.data?.idTopic}</StyleTableCell>
                                         <StyleTableCell align="center">{topic.data.data?.nameTopic}</StyleTableCell>
                                         <StyleTableCell align="center">{topic.data.data?.nameHead}</StyleTableCell>

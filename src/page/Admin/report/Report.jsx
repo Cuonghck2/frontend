@@ -98,9 +98,13 @@ const Report = () => {
                     onChange={handleChange}
                 >
                     <MenuItem value={'ALL'}>Tất cả</MenuItem>
-                    <MenuItem value={'CNTT'}>CNTT</MenuItem>
-                    <MenuItem value={'TCNH'}>TCNH</MenuItem>
-                    <MenuItem value={'QTKD'}>QTKD</MenuItem>
+                    {UNIT.map((title, index) => {
+                        return (
+                            <MenuItem key={index} value={title}>
+                                {title}
+                            </MenuItem>
+                        );
+                    })}
                 </Select>
             </FormControl>
             <FormControl size='small' sx={{ m: 1, minWidth: 200, float: "right" }}>
@@ -114,9 +118,13 @@ const Report = () => {
                     onChange={handleChange}
                 >
                     <MenuItem value={'ALL'}>Tất cả</MenuItem>
-                    <MenuItem value={'2023'}>2023</MenuItem>
-                    <MenuItem value={'2024'}>2024</MenuItem>
-                    <MenuItem value={'2025'}>2025</MenuItem>
+                    {YEAR.map((title, index) => {
+                        return (
+                            <MenuItem key={index} value={title}>
+                                {title}
+                            </MenuItem>
+                        );
+                    })}
                 </Select>
             </FormControl>
             <Paper sx={{ width: '100%', overflow: 'hidden' }}>
