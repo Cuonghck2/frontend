@@ -21,7 +21,7 @@ const UpdateTopic = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [typeSearch, setTypeSearch] = useState('');
-    const [searchResult, setSearchResult] = useState([])
+    const [dataTopics, setDataTopics] = useState([])
     const [searchValue, setSearchValue] = useState('')
     const [openModal, setOpenModal] = useState(false);
     const [confirmDel, setConfirmDel] = useState(false)
@@ -56,13 +56,13 @@ const UpdateTopic = () => {
     };
     useEffect(() => {
         if (typeSearch === "Mã đề tài") {
-            setSearchResult(topics.filter((topic) => topic.data.data?.idTopic.includes(searchValue)));
+            setDataTopics(topics.filter((topic) => topic.data.data?.idTopic.includes(searchValue)));
         } else if (typeSearch === "Tên đề tài") {
-            setSearchResult(topics.filter((topic) => topic.data.data?.nameTopic.includes(searchValue)));
+            setDataTopics(topics.filter((topic) => topic.data.data?.nameTopic.includes(searchValue)));
         } else if (typeSearch === "Tên chủ nhiệm") {
-            setSearchResult(topics.filter((topic) => topic.data.data?.nameHead.includes(searchValue)));
+            setDataTopics(topics.filter((topic) => topic.data.data?.nameHead.includes(searchValue)));
         } else {
-            setSearchResult(topics);
+            setDataTopics(topics);
         }
     }, [topics, searchValue, typeSearch]);
     const handleChangeRowsPerPage = (event) => {
@@ -131,8 +131,8 @@ const UpdateTopic = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody >
-                            {searchResult.length ? (rowsPerPage > 0
-                                ? searchResult.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                            {dataTopics.length ? (rowsPerPage > 0
+                                ? dataTopics.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 : topics.topics
                             ).map((topic, index) => {
                                 return (
@@ -172,7 +172,7 @@ const UpdateTopic = () => {
                                                     padding: 4,
                                                 }}
                                             >
-                                                <Typography variant="h5" sx={{ marginBottom: "15px" }} >
+                                                <Typography variant="h5" sx={{ marginBottom: "15px" }}>
                                                     Bạn có chắc chắn muốn xóa hay không ?
                                                 </Typography>
                                                 <Button variant="text" sx={{ margin: "24px 0", float: "right" }} onClick={handleCancelDel}>Hủy Bỏ</Button>

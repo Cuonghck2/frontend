@@ -1,32 +1,68 @@
 import { FormControl, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { StyleTableCell, StyledTableRow } from '../../../Layouts/component/customMUI/customMUI';
 
-function createData(id, nameTopic, nameTeach, type, unit, level, typeResult, awardlevel) {
-    return { id, nameTopic, nameTeach, type, unit, level, typeResult, awardlevel };
+function createData(id, nameTopic, nameTeach, type, unit, year, level, typeResult, awardlevel) {
+    return { id, nameTopic, nameTeach, type, unit, year, level, typeResult, awardlevel };
 }
 const rows = [
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "Trường", "Xuất sắc", "Đặc biệt"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "Trường", "Xuất sắc", "Đặc biệt"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "Trường", "Xuất sắc", "Đặc biệt"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "Trường", "Xuất sắc", "Đặc biệt"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "Trường", "Xuất sắc", "Đặc biệt"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "Trường", "Xuất sắc", "Đặc biệt"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "Trường", "Xuất sắc", "Đặc biệt"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "Trường", "Xuất sắc", "Đặc biệt"),
+    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "2023", "Trường", "Xuất sắc", "Đặc biệt"),
+    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "2024", "Trường", "Xuất sắc", "Đặc biệt"),
+    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "2023", "Trường", "Xuất sắc", "Đặc biệt"),
+    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "2023", "Trường", "Xuất sắc", "Đặc biệt"),
+    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "2024", "Trường", "Xuất sắc", "Đặc biệt"),
+    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Giảng viên", "CNTT", "2025", "Trường", "Xuất sắc", "Đặc biệt"),
+    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "2025", "Trường", "Xuất sắc", "Đặc biệt"),
+    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "2025", "Trường", "Xuất sắc", "Đặc biệt"),
 ]
 const Report = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
 
-    const handleChangePage = (event, newPage) => {
+    const TYPE = ["Sinh viên", "Giảng viên"];
+    const YEAR = ["2023", "2024", "2025"];
+    const UNIT = ["CNTT", "TCNH", "QTKD"]
+
+    const [dataFilter, setDataFilter] = useState({
+        TYPE,
+        YEAR,
+        UNIT
+    }) // save data onchange
+    const [filtersData, setFiltersData] = useState(rows)
+
+    const handleChange = (e) => {
+        const { value, name } = e.target
+
+        const object = {
+            TYPE,
+            YEAR,
+            UNIT
+        } // handle option all
+
+        if (value === 'ALL') {
+            setDataFilter((prev) => ({
+                ...prev,
+                [name]: object[name].filter((option) => option !== 'ALL'),
+            }));
+        } else {
+            setDataFilter((prev) => ({ ...prev, [name]: [value] }));
+        }
+    }
+
+    useEffect(() => {
+        const dataFiltered = rows.filter((item) => {
+            return dataFilter.TYPE.includes(item.type) && dataFilter.YEAR.includes(item.year) && dataFilter.UNIT.includes(item.unit)
+        })
+        setFiltersData(dataFiltered)
+    }, [dataFilter])
+
+    const handleChangePage = (_, newPage) => {
         setPage(newPage);
     };
     const handleChangeRowsPerPage = (event) => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
-
 
     return (
         <>
@@ -36,9 +72,19 @@ const Report = () => {
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     label="Báo cáo loại"
+                    defaultValue=''
+                    name="TYPE"
+                    onChange={handleChange}
                 >
-                    <MenuItem value={10}>Giảng viên</MenuItem>
-                    <MenuItem value={20}>Sinh viên</MenuItem>
+                    <MenuItem value={'ALL'}>Tất cả</MenuItem>
+                    {TYPE.map((title, index) => {
+                        return (
+                            <MenuItem key={index} value={title}>
+                                {title}
+                            </MenuItem>
+                        );
+                    })}
+
                 </Select>
             </FormControl>
             <FormControl size='small' sx={{ m: 1, minWidth: 200, float: "right" }}>
@@ -47,10 +93,14 @@ const Report = () => {
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     label="Báo cáo đơn vị"
+                    defaultValue=''
+                    name="UNIT"
+                    onChange={handleChange}
                 >
-                    <MenuItem value={10}>CNTT</MenuItem>
-                    <MenuItem value={20}>TCNH</MenuItem>
-                    <MenuItem value={30}>QTKD</MenuItem>
+                    <MenuItem value={'ALL'}>Tất cả</MenuItem>
+                    <MenuItem value={'CNTT'}>CNTT</MenuItem>
+                    <MenuItem value={'TCNH'}>TCNH</MenuItem>
+                    <MenuItem value={'QTKD'}>QTKD</MenuItem>
                 </Select>
             </FormControl>
             <FormControl size='small' sx={{ m: 1, minWidth: 200, float: "right" }}>
@@ -59,10 +109,14 @@ const Report = () => {
                     labelId="demo-simple-select-label"
                     id="demo-simple-select"
                     label="Báo cáo năm"
+                    defaultValue=''
+                    name="YEAR"
+                    onChange={handleChange}
                 >
-                    <MenuItem value={10}>2023</MenuItem>
-                    <MenuItem value={20}>2024</MenuItem>
-                    <MenuItem value={30}>2025</MenuItem>
+                    <MenuItem value={'ALL'}>Tất cả</MenuItem>
+                    <MenuItem value={'2023'}>2023</MenuItem>
+                    <MenuItem value={'2024'}>2024</MenuItem>
+                    <MenuItem value={'2025'}>2025</MenuItem>
                 </Select>
             </FormControl>
             <Paper sx={{ width: '100%', overflow: 'hidden' }}>
@@ -75,6 +129,7 @@ const Report = () => {
                                 <StyleTableCell align="center">Tên chủ nhiệm</StyleTableCell>
                                 <StyleTableCell align="center">Loại</StyleTableCell>
                                 <StyleTableCell align="center">Đơn vị</StyleTableCell>
+                                <StyleTableCell align="center">Năm</StyleTableCell>
                                 <StyleTableCell align="center">Cấp</StyleTableCell>
                                 <StyleTableCell align="center">Loại giải thưởng</StyleTableCell>
                                 <StyleTableCell align="center">Mức giải thưởng</StyleTableCell>
@@ -82,8 +137,8 @@ const Report = () => {
                         </TableHead>
                         <TableBody>
                             {(rowsPerPage > 0
-                                ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                : rows
+                                ? filtersData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                : filtersData
                             ).map((item, index) => {
                                 return (
                                     <StyledTableRow key={index}>
@@ -92,11 +147,10 @@ const Report = () => {
                                         <StyleTableCell align="center">{item.nameTeach}</StyleTableCell>
                                         <StyleTableCell align="center">{item.type}</StyleTableCell>
                                         <StyleTableCell align="center">{item.unit}</StyleTableCell>
+                                        <StyleTableCell align="center">{item.year}</StyleTableCell>
                                         <StyleTableCell align="center">{item.level}</StyleTableCell>
                                         <StyleTableCell align="center">{item.typeResult}</StyleTableCell>
                                         <StyleTableCell align="center">{item.awardlevel}</StyleTableCell>
-
-
                                     </StyledTableRow>
                                 )
                             })}
@@ -106,7 +160,7 @@ const Report = () => {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 15]}
                     component="div"
-                    count={rows.length}
+                    count={filtersData.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}
