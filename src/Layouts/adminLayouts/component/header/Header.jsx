@@ -1,7 +1,7 @@
 import { Notifications } from '@mui/icons-material'
 import { Avatar, Badge } from '@mui/material'
 import React from 'react'
-import Breadcrumb from '../../../component/Breadcrumbs'
+import Breadcrumb from '../../../../component/Breadcrumbs'
 
 const Header = () => {
     return (

@@ -8,7 +8,7 @@ import {
 } from '@mui/material'
 import React, { useEffect } from 'react'
 import { useState } from 'react';
-import { StyleTableCell, StyledTableRow } from '../../../Layouts/component/customMUI/customMUI';
+import { StyleTableCell, StyledTableRow } from '../../../Layouts/adminLayouts/component/customMUI/customMUI';
 import ModalUser from './component/modalUser/ModalUser';
 import request from '../../../utils/request';
 import { useDispatch, useSelector } from 'react-redux';

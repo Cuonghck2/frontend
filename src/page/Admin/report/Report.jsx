@@ -1,6 +1,6 @@
 import { FormControl, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
 import React, { useEffect, useState } from 'react'
-import { StyleTableCell, StyledTableRow } from '../../../Layouts/component/customMUI/customMUI';
+import { StyleTableCell, StyledTableRow } from '../../../Layouts/adminLayouts/component/customMUI/customMUI';
 
 function createData(id, nameTopic, nameTeach, type, unit, year, level, typeResult, awardlevel) {
     return { id, nameTopic, nameTeach, type, unit, year, level, typeResult, awardlevel };

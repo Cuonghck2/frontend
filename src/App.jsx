@@ -1,10 +1,10 @@
-import Admin from "./page/Admin/admin"
+import Main from "./page/Main/Main"
 
 function App() {
 
   return (
     <>
-      <Admin />
+      <Main />
     </>
   )
 

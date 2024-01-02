@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import routes from "../../router/routesAdmin"
-import DefaultLayouts from '../../Layouts/defaultsLayout/DefaultLayout'
+import DefaultLayouts from '../../Layouts/adminLayouts/defaultsLayout/DefaultLayout'
 
 const Admin = () => {
     return (

@@ -9,7 +9,7 @@ const Breadcrumb = () => {
     return (
         <Breadcrumbs>
             <Link color="inherit" to="/">
-                Trang chủ
+                DashBoard
             </Link>
             {pathnames.map((crumb, index) => {
                 crumbLink += `/${crumb}`

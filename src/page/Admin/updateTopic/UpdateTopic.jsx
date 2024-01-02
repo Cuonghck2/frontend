@@ -1,13 +1,13 @@
-import React, { useEffect, useMemo } from 'react'
-import { Add, Delete, Edit, Search } from '@mui/icons-material'
+import React, { useEffect } from 'react'
+import { Add, Delete, Edit } from '@mui/icons-material'
 import {
     Backdrop,
     Box,
-    Button, CircularProgress, Divider, FormControl, IconButton, InputBase, InputLabel, MenuItem, Modal, Paper,
+    Button, CircularProgress, FormControl, IconButton, InputBase, InputLabel, MenuItem, Modal, Paper,
     Select, Table, TableBody, TableContainer,
     TableHead, TablePagination, TableRow, Typography
 } from '@mui/material'
-import { StyleTableCell, StyledTableRow } from '../../../Layouts/component/customMUI/customMUI';
+import { StyleTableCell, StyledTableRow } from '../../../Layouts/adminLayouts/component/customMUI/customMUI';
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import request from '../../../utils/request'
@@ -48,7 +48,6 @@ const UpdateTopic = () => {
             } finally {
                 setIsLoading(false);
             }
-
         }
         fetchData()
     }, [])
@@ -153,7 +152,7 @@ const UpdateTopic = () => {
                                 <StyleTableCell align="center">Chức năng</StyleTableCell>
                             </TableRow>
                         </TableHead>
-                        <TableBody >
+                        <TableBody>
                             {dataTopics.length ? (rowsPerPage > 0
                                 ? dataTopics.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 : topics.topics

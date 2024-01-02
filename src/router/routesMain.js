@@ -1,26 +1,21 @@
-import routes from "../config/routes";
-import Admin from "../page/adminPage/admin";
+import routes from "../config/routeMain";
+import LoginPage from "../page/Main/Login/LoginPage";
+import RegisterTopics from "../page/Main/RegisterTopics/RegisterTopics";
+import HomePage from "../page/Main/homePage/HomePage";
 
 const publicRoutes = [
   {
     path: routes.home,
-    component: Home,
+    component: HomePage,
   },
   {
-    path: routes.profiles,
-    component: Profiles,
+    path: routes.registerTopics,
+    component: RegisterTopics,
   },
   {
-    path: routes.search,
-    component: Search,
+    path: routes.login,
+    component: LoginPage,
   },
 ];
 
-const privateRoutes = [
-  {
-    path: routes.admin,
-    component: Admin,
-  },
-];
-
-export { publicRoutes, privateRoutes };
+export { publicRoutes };

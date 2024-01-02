@@ -1,7 +1,7 @@
 const routeHome = {
   home: "/",
-  profiles: "profiles",
-  search: "/search",
+  registerTopics: "/register-topics",
+  login: "/login",
   admin: "/admin",
 };
 
