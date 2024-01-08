@@ -7,6 +7,7 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 const navItems = [
     {
@@ -18,16 +19,13 @@ const navItems = [
         path: '/register-topics',
     },
     {
-        name: 'Liên hệ',
-        path: '/contact',
-    },
-    {
         name: 'Đăng nhập',
         path: '/login',
     }
 
 ];
 const HomePage = () => {
+    const { isLogin } = useSelector(state => state.users)
     const navigate = useNavigate()
     return (
         <Box sx={{ display: 'flex' }}>
@@ -38,6 +36,8 @@ const HomePage = () => {
                         variant="h6"
                         component="div"
                         sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
+                        onClick={() => navigate('/')}
+
                     >
                         <img src="public/sv_logo_dashboard.png" alt="" />
                     </Typography>

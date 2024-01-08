@@ -4,19 +4,23 @@ import { createSlice } from "@reduxjs/toolkit";
 const usersSlice = createSlice({
     name: "users",
     initialState: {
-        users: []
+        users: [],
+        isLogin: false
     },
     reducers: {
         listUsers: (state, action) => {
             state.users = action.payload
+        },
+        login: (state, action) => {
+            state.isLogin = action.payload
         },
         addUser: (state, action) => {
             const data = action.payload;
             const newData = {
                 data: data
             }
-            console.log(data)
             state.users.push(newData)
+            state.isLogin = action.payload
         },
         editUser: (state, action) => {
             const findData = state.users.find((item) => {
@@ -37,5 +41,5 @@ const usersSlice = createSlice({
     }
 })
 
-export const { listUsers, addUser, editUser, deleteUsers } = usersSlice.actions
+export const { listUsers, login, addUser, editUser, deleteUsers } = usersSlice.actions
 export default usersSlice.reducer

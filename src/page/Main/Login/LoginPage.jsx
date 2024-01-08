@@ -1,9 +1,88 @@
 import { Lock } from '@mui/icons-material'
 import { Avatar, Box, Button, Checkbox, TextField, Typography } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+import useUser from '../../../api/useUsers'
+import { useDispatch } from 'react-redux'
+import { addUser, login } from '../../../slice/usersSlice'
+import request from '../../../utils/request'
 
 const LoginPage = () => {
     const [isSignIn, setIsSignIn] = useState(false)
+    const [isLogin, setIsLogin] = useState(false)
+    const [formLogin, setFormLogin] = useState({
+        accountUser: "",
+        passwordUser: ""
+    })
+    const [emptyError, setEmptyError] = useState("")
+    const dispatch = useDispatch()
+    const [formData, setFormData] = useState({
+        idUser: "",
+        fullName: "",
+        account: "",
+        password: "",
+        idUnit: "",
+    })
+    const { idUser, fullName, account, password, idUnit } = formData
+    const { accountUser, passwordUser } = formLogin
+    const { postUser } = useUser()
+    const handleChange = (e) => {
+        const { name, value } = e.target
+        setFormData((prevFormData) => ({
+            ...prevFormData,
+            [name]: value
+        }))
+    }
+    const handleChangeLogin = (e) => {
+        const { name, value } = e.target
+        setFormLogin((prevFormLogin) => ({
+            ...prevFormLogin,
+            [name]: value
+        }))
+    }
+    const handleLogin = async () => {
+        try {
+            const res = await request.get("/users.json");
+            const userData = Object.values(res?.data);
+            const { accountUser, passwordUser } = formLogin;
+
+            const loggedInUser = userData.find(user => {
+                return user?.data.account === accountUser && user?.data.password === passwordUser
+            })
+
+            if (loggedInUser) {
+                setIsLogin(true)
+                dispatch(login(isLogin))
+                navigate("/")
+            } else {
+                console.log("Sai tên đăng nhập hoặc mật khẩu!");
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    const handleSignIn = () => {
+        const dataUsers = {
+            idUser,
+            fullName,
+            account,
+            password,
+            idUnit
+        }
+        if (!idUser || !fullName || !account || !password || !idUnit) {
+            setEmptyError("Vui lòng nhập đầy đủ thông tin*")
+        } else {
+            setFormData({
+                idUser: "",
+                fullName: "",
+                account: "",
+                password: "",
+                idUnit: ""
+            })
+            postUser(dataUsers)
+        }
+    }
+    const navigate = useNavigate()
 
     return (
         <>
@@ -16,8 +95,8 @@ const LoginPage = () => {
                         </Avatar>
                     </Box>
                     <Typography variant='h6' sx={{ textAlign: 'center', mt: 2 }}>Đăng nhập</Typography>
-                    <TextField sx={{ width: '100%', marginTop: '20px' }} label='Tài khoản' />
-                    <TextField sx={{ width: '100%', marginTop: '20px' }} label='Mật khẩu' type='password' />
+                    <TextField onChange={handleChangeLogin} name='accountUser' value={accountUser} sx={{ width: '100%', marginTop: '20px' }} label='Tài khoản' />
+                    <TextField onChange={handleChangeLogin} name='passwordUser' value={passwordUser} sx={{ width: '100%', marginTop: '20px' }} label='Mật khẩu' type='password' />
                     <Box sx={{ display: "flex", justifyContent: "space-between", mt: 2 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                             <Checkbox disabled sx={{ p: 0, mr: 1 }} />
@@ -25,10 +104,12 @@ const LoginPage = () => {
                         </Box>
                         <Box onClick={() => setIsSignIn(true)}>
                             Bạn chưa có tài khoản?
+                            {" "}
                             <span className='text-[#9c27b0] text-lg font-medium hover:cursor-pointer'>Đăng ký</span>
                         </Box>
                     </Box>
-                    <Button variant='contained' sx={{ width: '100%', marginTop: '20px' }}>Đăng nhập</Button>
+                    <Button variant='contained' sx={{ width: '100%', marginTop: '20px' }} onClick={handleLogin}>Đăng nhập</Button>
+                    <span className='text-[#9c27b0] text-lg font-normal hover:cursor-pointer mt-2 float-right' onClick={() => navigate('/')}>Quay lại trang chủ</span>
                 </Box>
             }
 
@@ -40,14 +121,19 @@ const LoginPage = () => {
                         </Avatar>
                     </Box>
                     <Typography variant='h6' sx={{ textAlign: 'center', mt: 2 }}>Đăng ký</Typography>
-                    <TextField sx={{ width: '100%', marginTop: '20px' }} label='Tài khoản' />
-                    <TextField sx={{ width: '100%', marginTop: '20px' }} label='Mật khẩu' type='password' />
-                    <TextField sx={{ width: '100%', marginTop: '20px' }} label='Nhập lại mật khẩu' type='password' />
+                    {emptyError && <span className='pt-8 text-red-500'>{emptyError}</span>}
+                    <TextField onChange={handleChange} value={idUser} name='idUser' sx={{ width: '100%', marginTop: '20px' }} label='Mã người dùng' />
+                    <TextField onChange={handleChange} value={fullName} name='fullName' sx={{ width: '100%', marginTop: '20px' }} label='Họ và tên' />
+                    <TextField onChange={handleChange} value={account} name='account' sx={{ width: '100%', marginTop: '20px' }} label='Tài khoản' />
+                    <TextField onChange={handleChange} value={password} name='password' sx={{ width: '100%', marginTop: '20px' }} label='Mật khẩu' type='password' />
+                    <TextField onChange={handleChange} value={idUnit} name='idUnit' sx={{ width: '100%', marginTop: '20px' }} label='Mã đơn vị' />
                     <Box sx={{ mt: 2, float: 'right' }} >
                         Bạn đã có tài khoản?
+                        {" "}
                         <span className='text-[#9c27b0] text-lg font-medium hover:cursor-pointer' onClick={() => setIsSignIn(false)}>Đăng nhập</span>
                     </Box>
-                    <Button variant='contained' sx={{ width: '100%', marginTop: '20px' }}>Đăng ký</Button>
+                    <Button variant='contained' sx={{ width: '100%', marginTop: '20px' }} onClick={handleSignIn}>Đăng ký</Button>
+                    <span className='text-[#9c27b0] text-lg font-normal hover:cursor-pointer mt-2 float-right' onClick={() => navigate('/')}>Quay lại trang chủ</span>
                 </Box>
             }
 
