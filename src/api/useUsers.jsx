@@ -4,7 +4,8 @@ import request from '../utils/request';
 const useUser = () => {
     const postUser = async (data) => {
         try {
-            await request.post("/users.json", { data })
+            const res = await request.post("/users.json", { data })
+            console.log(res?.data)
         } catch (error) {
             console.log(error)
         }

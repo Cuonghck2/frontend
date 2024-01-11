@@ -5,14 +5,16 @@ const usersSlice = createSlice({
     name: "users",
     initialState: {
         users: [],
-        isLogin: false
+        isLogin: localStorage.getItem('isLogin')
     },
     reducers: {
         listUsers: (state, action) => {
             state.users = action.payload
         },
         login: (state, action) => {
-            state.isLogin = action.payload
+            const isLogin = action.payload;
+            localStorage.setItem('isLogin', isLogin.toString());
+            state.isLogin = isLogin;
         },
         addUser: (state, action) => {
             const data = action.payload;

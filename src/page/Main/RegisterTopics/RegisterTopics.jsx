@@ -1,6 +1,6 @@
-import React from 'react'
-import { AppBar, Box, Button, Checkbox, CssBaseline, FormControl, FormControlLabel, Grid, InputLabel, MenuItem, Select, TextField, Toolbar, Typography } from '@mui/material'
+import { AppBar, Box, Button, CssBaseline, FormControl, Grid, InputLabel, MenuItem, Select, TextField, Toolbar, Typography } from '@mui/material'
 import { useNavigate } from 'react-router-dom'
+import { useSelector } from 'react-redux';
 
 const navItems = [
     {
@@ -11,14 +11,12 @@ const navItems = [
         name: 'Đăng ký đề tài',
         path: '/register-topics',
     },
-    {
-        name: 'Đăng nhập',
-        path: '/login',
-    }
 
 ];
 const RegisterTopics = () => {
     const navigate = useNavigate()
+    const { isLogin } = useSelector(state => state.users)
+
     return (
         <>
             <Box sx={{ display: 'flex' }}>
@@ -30,6 +28,7 @@ const RegisterTopics = () => {
                             component="div"
                             sx={{ flexGrow: 1, display: { xs: 'none', sm: 'block' } }}
                             onClick={() => navigate('/')}
+
                         >
                             <img src="public/sv_logo_dashboard.png" alt="" />
                         </Typography>
@@ -39,6 +38,18 @@ const RegisterTopics = () => {
                                     {item.name}
                                 </Button>
                             ))}
+                            {
+                                isLogin &&
+                                <Button sx={{ color: '#fff', margin: ' 0 16px' }}>
+                                    Đăng xuất
+                                </Button>
+                            }
+                            {
+                                !isLogin &&
+                                <Button onClick={() => navigate('/login')} sx={{ color: '#fff', margin: ' 0 16px' }}>
+                                    Đăng nhập
+                                </Button>
+                            }
                         </Box>
                     </Toolbar>
                 </AppBar>

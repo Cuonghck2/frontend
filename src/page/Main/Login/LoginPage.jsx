@@ -51,9 +51,8 @@ const LoginPage = () => {
             })
 
             if (loggedInUser) {
+                localStorage.setItem('isLogin', 'true');
                 setIsLogin(true)
-                dispatch(login(isLogin))
-                navigate("/")
             } else {
                 console.log("Sai tên đăng nhập hoặc mật khẩu!");
             }
@@ -61,6 +60,12 @@ const LoginPage = () => {
             console.log(error);
         }
     };
+    useEffect(() => {
+        if (isLogin) {
+            navigate("/")
+            dispatch(login(isLogin))
+        }
+    }, [isLogin])
     const handleSignIn = () => {
         const dataUsers = {
             idUser,
@@ -120,7 +125,7 @@ const LoginPage = () => {
                             <Lock sx={{ fontSize: '25px', color: '#fff' }} />
                         </Avatar>
                     </Box>
-                    <Typography variant='h6' sx={{ textAlign: 'center', mt: 2 }}>Đăng ký</Typography>
+                    <Typography variant='h6' sx={{ textAlign: 'center', mt: 2 }}>Đăng ký thành viên</Typography>
                     {emptyError && <span className='pt-8 text-red-500'>{emptyError}</span>}
                     <TextField onChange={handleChange} value={idUser} name='idUser' sx={{ width: '100%', marginTop: '20px' }} label='Mã người dùng' />
                     <TextField onChange={handleChange} value={fullName} name='fullName' sx={{ width: '100%', marginTop: '20px' }} label='Họ và tên' />
@@ -136,7 +141,6 @@ const LoginPage = () => {
                     <span className='text-[#9c27b0] text-lg font-normal hover:cursor-pointer mt-2 float-right' onClick={() => navigate('/')}>Quay lại trang chủ</span>
                 </Box>
             }
-
         </>
     )
 }

@@ -18,15 +18,12 @@ const navItems = [
         name: 'Đăng ký đề tài',
         path: '/register-topics',
     },
-    {
-        name: 'Đăng nhập',
-        path: '/login',
-    }
 
 ];
 const HomePage = () => {
     const { isLogin } = useSelector(state => state.users)
     const navigate = useNavigate()
+
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
@@ -47,6 +44,18 @@ const HomePage = () => {
                                 {item.name}
                             </Button>
                         ))}
+                        {
+                            isLogin &&
+                            <Button onClick={() => navigate('/login')} sx={{ color: '#fff', margin: ' 0 16px' }}>
+                                Đăng xuất
+                            </Button>
+                        }
+                        {
+                            !isLogin &&
+                            <Button onClick={() => navigate('/login')} sx={{ color: '#fff', margin: ' 0 16px' }}>
+                                Đăng nhập
+                            </Button>
+                        }
                     </Box>
                 </Toolbar>
             </AppBar>

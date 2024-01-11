@@ -159,7 +159,6 @@ const UpdateTopic = () => {
                             ).map((topic, index) => {
                                 return (
                                     <StyledTableRow key={index}>
-
                                         <StyleTableCell align="center">{topic.data.data?.idTopic}</StyleTableCell>
                                         <StyleTableCell align="center">{topic.data.data?.nameTopic}</StyleTableCell>
                                         <StyleTableCell align="center">{topic.data.data?.nameHead}</StyleTableCell>
