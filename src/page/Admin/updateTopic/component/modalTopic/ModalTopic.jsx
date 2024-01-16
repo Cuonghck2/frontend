@@ -1,3 +1,5 @@
+/* eslint-disable react/prop-types */
+// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from 'react'
 import { Box, Button, FormControl, InputLabel, MenuItem, Modal, Select, TextField, Typography } from '@mui/material';
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
@@ -34,6 +36,7 @@ const ModalTopic = ({ openModal, onCloseModal, modalMode, modalName, modalData }
         unit: "",
         timeStart: null,
         timeEnd: null,
+        awardLevel: "",
         acceptanceResult: ""
     })
 
@@ -48,13 +51,14 @@ const ModalTopic = ({ openModal, onCloseModal, modalMode, modalName, modalData }
                 unit: modalData.data.data.unit,
                 timeStart: modalData.data.data.timeStart,
                 timeEnd: modalData.data.data.timeEnd,
+                awardLevel: modalData.data.data.awardLevel,
                 acceptanceResult: modalData.data.data.acceptanceResult
             })
         }
     }, [modalData])
 
 
-    const { idTopic, nameTopic, nameHead, type, unit, timeStart, timeEnd, acceptanceResult } = formData;
+    const { idTopic, nameTopic, nameHead, type, unit, timeStart, timeEnd, awardLevel, acceptanceResult } = formData;
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prevFormData) => ({
@@ -84,6 +88,7 @@ const ModalTopic = ({ openModal, onCloseModal, modalMode, modalName, modalData }
             unit,
             timeStart,
             timeEnd,
+            awardLevel,
             acceptanceResult
         };
         if (
@@ -94,6 +99,7 @@ const ModalTopic = ({ openModal, onCloseModal, modalMode, modalName, modalData }
             !unit ||
             !acceptanceResult
             ||
+            !awardLevel ||
             !timeStart ||
             !timeEnd
         ) {
@@ -110,6 +116,7 @@ const ModalTopic = ({ openModal, onCloseModal, modalMode, modalName, modalData }
                     unit,
                     timeStart,
                     timeEnd,
+                    awardLevel,
                     acceptanceResult
                 }
             }))
@@ -121,6 +128,7 @@ const ModalTopic = ({ openModal, onCloseModal, modalMode, modalName, modalData }
                 unit: "",
                 timeStart: null,
                 timeEnd: null,
+                awardLevel: "",
                 acceptanceResult: ""
             })
             onCloseModal();
@@ -138,6 +146,7 @@ const ModalTopic = ({ openModal, onCloseModal, modalMode, modalName, modalData }
                 unit,
                 timeStart,
                 timeEnd,
+                awardLevel,
                 acceptanceResult
             }
         }))
@@ -160,10 +169,10 @@ const ModalTopic = ({ openModal, onCloseModal, modalMode, modalName, modalData }
                 {dateError && <span className='m-5 text-red-500'>{dateError}</span>}
                 <div className='flex items-center justify-around my-3'>
                     <div className='mx-4'>
-                        <TextField name='idTopic' onChange={handleChange} value={idTopic} sx={{ margin: "12px 0 0 0", width: "100%" }} id="outlined-basic" label="Mã đề tài" variant="outlined" />
-                        <TextField name='nameTopic' onChange={handleChange} value={nameTopic} sx={{ margin: "12px 0 0 0", width: "100%" }} id="outlined-basic" label="Tên đề tài" variant="outlined" />
-                        <TextField name='nameHead' onChange={handleChange} value={nameHead} sx={{ margin: "12px 0 0 0", width: "100%" }} id="outlined-basic" label="Tên chủ nhiệm" variant="outlined" />
-                        <FormControl sx={{ margin: "12px 0 0 0", width: "100%" }}>
+                        <TextField name='idTopic' onChange={handleChange} value={idTopic} sx={{ margin: "16px 0 16px 0", width: "100%" }} id="outlined-basic" label="Mã đề tài" variant="outlined" />
+                        <TextField name='nameTopic' onChange={handleChange} value={nameTopic} sx={{ margin: "16px 0 16px 0", width: "100%" }} id="outlined-basic" label="Tên đề tài" variant="outlined" />
+                        <TextField name='nameHead' onChange={handleChange} value={nameHead} sx={{ margin: "16px 0 16px 0", width: "100%" }} id="outlined-basic" label="Tên chủ nhiệm" variant="outlined" />
+                        <FormControl sx={{ margin: "16px 0 0 0", width: "100%" }}>
                             <InputLabel id="demo-simple-select-label">Loại</InputLabel>
                             <Select
                                 name='type'
@@ -192,7 +201,8 @@ const ModalTopic = ({ openModal, onCloseModal, modalMode, modalName, modalData }
                                 <DatePicker disablePast onChange={handleChangeTimeEnd} value={timeEnd} label="Kết thúc" />
                             </DemoContainer>
                         </LocalizationProvider>
-                        <TextField name='acceptanceResult' onChange={handleChange} value={acceptanceResult} sx={{ margin: "12px 0 0 0", width: "100%" }} id="outlined-basic" label="Kết quả nghiệm thu" variant="outlined" />
+                        <TextField name='acceptanceResult' onChange={handleChange} value={acceptanceResult} sx={{ margin: "12px 0 0 0", width: "100%" }} id="outlined-basic" label="Loại giải thưởng" variant="outlined" />
+                        <TextField name='awardLevel' onChange={handleChange} value={awardLevel} sx={{ margin: "12px 0 0 0", width: "100%" }} id="outlined-basic" label="Mức giải thưởng" variant="outlined" />
                     </div>
                 </div>
                 <Button variant="text" sx={{ margin: "24px 0", float: "right" }} onClick={onCloseModal}>Hủy Bỏ</Button>

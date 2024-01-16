@@ -1,24 +1,41 @@
-import { FormControl, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
+/* eslint-disable react-hooks/exhaustive-deps */
+import { Backdrop, Box, CircularProgress, FormControl, InputLabel, MenuItem, Paper, Select, Table, TableBody, TableContainer, TableHead, TablePagination, TableRow } from '@mui/material';
 import React, { useEffect, useState } from 'react'
 import { StyleTableCell, StyledTableRow } from '../../../Layouts/adminLayouts/component/customMUI/customMUI';
+import { useDispatch, useSelector } from 'react-redux';
+import request from '../../../utils/request';
+import { listTopics } from '../../../slice/topicsSlice';
 
-function createData(id, nameTopic, nameTeach, type, unit, year, level, typeResult, awardlevel) {
-    return { id, nameTopic, nameTeach, type, unit, year, level, typeResult, awardlevel };
-}
-const rows = [
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "2023", "Trường", "Xuất sắc", "Đặc biệt"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "2024", "Trường", "Xuất sắc", "Đặc biệt"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "2023", "Trường", "Xuất sắc", "Đặc biệt"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "2023", "Trường", "Xuất sắc", "Đặc biệt"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "2024", "Trường", "Xuất sắc", "Đặc biệt"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Giảng viên", "CNTT", "2025", "Trường", "Xuất sắc", "Đặc biệt"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "2025", "Trường", "Xuất sắc", "Đặc biệt"),
-    createData('DT01', "Quản lý nhà xe", "Nguyễn Đức Cương", "Sinh viên", "CNTT", "2025", "Trường", "Xuất sắc", "Đặc biệt"),
-]
+
 const Report = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
-
+    const [isLoading, setIsLoading] = useState(true);
+    const { topics } = useSelector(state => state.topics)
+    const [filtersData, setFiltersData] = useState([])
+    const dispatch = useDispatch()
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setIsLoading(true);
+                const res = await request("/topic.json")
+                const resData = Object.values(res.data)
+                const keyData = Object.keys(res.data)
+                const newData = keyData.map((ele, index) => {
+                    return {
+                        id: ele,
+                        data: resData[index]
+                    }
+                })
+                dispatch(listTopics(newData))
+            } catch (error) {
+                console.log(error)
+            } finally {
+                setIsLoading(false);
+            }
+        }
+        fetchData()
+    }, [])
     const TYPE = ["Sinh viên", "Giảng viên"];
     const YEAR = ["2023", "2024", "2025"];
     const UNIT = ["CNTT", "TCNH", "QTKD"]
@@ -27,18 +44,14 @@ const Report = () => {
         TYPE,
         YEAR,
         UNIT
-    }) // save data onchange
-    const [filtersData, setFiltersData] = useState(rows)
-
+    })
     const handleChange = (e) => {
         const { value, name } = e.target
-
         const object = {
             TYPE,
             YEAR,
             UNIT
-        } // handle option all
-
+        }
         if (value === 'ALL') {
             setDataFilter((prev) => ({
                 ...prev,
@@ -50,11 +63,11 @@ const Report = () => {
     }
 
     useEffect(() => {
-        const dataFiltered = rows.filter((item) => {
-            return dataFilter.TYPE.includes(item.type) && dataFilter.YEAR.includes(item.year) && dataFilter.UNIT.includes(item.unit)
+        const dataFiltered = topics.filter((item) => {
+            return dataFilter.TYPE.includes(item?.type) && dataFilter.YEAR.includes(item?.timeStart) && dataFilter.UNIT.includes(item?.unit)
         })
         setFiltersData(dataFiltered)
-    }, [dataFilter])
+    }, [topics, dataFilter])
 
     const handleChangePage = (_, newPage) => {
         setPage(newPage);
@@ -66,6 +79,23 @@ const Report = () => {
 
     return (
         <>
+            {isLoading && <Backdrop
+                sx={{
+                    zIndex: (theme) => theme.zIndex.drawer + 1,
+                    color: "#fff",
+                }}
+                open={true}
+            >
+                <Box
+                    sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                    }}
+                >
+                    <CircularProgress color="inherit" />
+                </Box>
+            </Backdrop>}
             <FormControl size='small' sx={{ m: 1, minWidth: 200, float: "right" }}>
                 <InputLabel id="demo-simple-select-label">Loại</InputLabel>
                 <Select
@@ -144,21 +174,20 @@ const Report = () => {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {(rowsPerPage > 0
+                            {filtersData.length > 0 && (rowsPerPage > 0
                                 ? filtersData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 : filtersData
-                            ).map((item, index) => {
+                            ).map((topic, index) => {
                                 return (
                                     <StyledTableRow key={index}>
-                                        <StyleTableCell align="center">{item.id}</StyleTableCell>
-                                        <StyleTableCell align="center">{item.nameTopic}</StyleTableCell>
-                                        <StyleTableCell align="center">{item.nameTeach}</StyleTableCell>
-                                        <StyleTableCell align="center">{item.type}</StyleTableCell>
-                                        <StyleTableCell align="center">{item.unit}</StyleTableCell>
-                                        <StyleTableCell align="center">{item.year}</StyleTableCell>
-                                        <StyleTableCell align="center">{item.level}</StyleTableCell>
-                                        <StyleTableCell align="center">{item.typeResult}</StyleTableCell>
-                                        <StyleTableCell align="center">{item.awardlevel}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.data?.idTopic}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.data?.nameTopic}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.data?.nameHead}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.data?.type}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.data?.unit}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.data?.timeStart}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.data?.awardLevel}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.data?.acceptanceResult}</StyleTableCell>
                                     </StyledTableRow>
                                 )
                             })}

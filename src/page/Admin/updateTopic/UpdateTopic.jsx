@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react'
 import { Add, Delete, Edit } from '@mui/icons-material'
 import {
@@ -148,7 +150,8 @@ const UpdateTopic = () => {
                                 <StyleTableCell align="center">Đơn vị</StyleTableCell>
                                 <StyleTableCell align="center">Bắt đầu</StyleTableCell>
                                 <StyleTableCell align="center">Kết thúc</StyleTableCell>
-                                <StyleTableCell align="center">Kết quả nghiệm thu</StyleTableCell>
+                                <StyleTableCell align="center">Loại giải thưởng</StyleTableCell>
+                                <StyleTableCell align="center">Mức giải thưởng</StyleTableCell>
                                 <StyleTableCell align="center">Chức năng</StyleTableCell>
                             </TableRow>
                         </TableHead>
@@ -166,6 +169,7 @@ const UpdateTopic = () => {
                                         <StyleTableCell align="center">{topic.data.data?.unit}</StyleTableCell>
                                         <StyleTableCell align="center">{topic.data.data?.timeStart}</StyleTableCell>
                                         <StyleTableCell align="center">{topic.data.data?.timeEnd}</StyleTableCell>
+                                        <StyleTableCell align="center">{topic.data.data?.awardLevel}</StyleTableCell>
                                         <StyleTableCell align="center">{topic.data.data?.acceptanceResult}</StyleTableCell>
                                         <StyleTableCell align="center">
                                             <IconButton color='primary' size='medium' variant="text" onClick={() => {
