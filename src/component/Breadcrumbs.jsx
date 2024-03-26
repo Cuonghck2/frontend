@@ -8,7 +8,7 @@ const Breadcrumb = () => {
   const pathnames = location.pathname.split("/").filter((x) => x);
   return (
     <Breadcrumbs>
-      <Link color="inherit" to="/admin">
+      <Link color="inherit" to="/update-user">
         Home
       </Link>
       {pathnames.map((crumb, index) => {
