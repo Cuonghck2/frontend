@@ -1,16 +1,14 @@
 /* eslint-disable no-unused-vars */
-import Main from "./page/Main/Main"
-import Admin from "./page/Admin/Admin"
-
+import Main from "./page/Main/Main";
+import Admin from "./page/Admin/Admin";
 
 function App() {
-
   return (
     <>
       <Admin />
-      {/* <Main /> */}
+      <Main />
     </>
-  )
+  );
 }
 
-export default App
+export default App;

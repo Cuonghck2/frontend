@@ -2,7 +2,7 @@ const routeHome = {
   home: "/",
   registerTopics: "/register-topics",
   login: "/login",
-  admin: "/admin",
+  signup: "/signup",
 };
 
 export default routeHome;

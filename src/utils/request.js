@@ -1,9 +1,11 @@
 import axios from "axios";
 
-const request = axios.create({
-  baseURL: "https://managementtopic-6e562-default-rtdb.firebaseio.com",
-  params: {
-    key: "AIzaSyB5oVqICoJbGcUlRWixGzcEo9LgXz0FM0o",
+const axiosInstance = axios.create({
+  baseURL: "http://127.0.0.1:8000",
+  headers: {
+    "Content-Type": "application/json",
+    Accept: "application/json",
   },
 });
-export default request;
+
+export default axiosInstance;

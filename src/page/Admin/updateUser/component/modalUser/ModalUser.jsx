@@ -1,119 +1,171 @@
-import { Box, Button, Modal, TextField, Typography } from '@mui/material';
-import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux';
-import { addUser, editUser } from '../../../../../slice/usersSlice';
-import useUser from '../../../../../api/useUsers';
+/* eslint-disable no-unused-vars */
+/* eslint-disable react/prop-types */
+import {
+  Box,
+  Button,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Modal,
+  Select,
+  TextField,
+  Typography,
+} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
+import request from "../../../../../utils/request";
 
 const styleModal = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: 600,
-    bgcolor: '#fff',
-    boxShadow: 24,
-    borderRadius: "12px",
-    padding: 4,
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  width: 600,
+  bgcolor: "#fff",
+  boxShadow: 24,
+  borderRadius: "12px",
+  padding: 4,
 };
-const ModalUser = ({ openModal, onCloseModal, modalMode, modalName, modalData }) => {
-    const dispatch = useDispatch()
-    const [emptyError, setEmptyError] = useState("")
-    const [formData, setFormData] = useState({
-        idUser: "",
-        fullName: "",
-        account: "",
-        password: "",
-        idUnit: "",
-    })
-    useEffect(() => {
-        if (modalData) {
-            setFormData({
-                idUser: modalData.data.data.idUser,
-                fullName: modalData.data.data.fullName,
-                account: modalData.data.data.account,
-                password: modalData.data.data.password,
-                idUnit: modalData.data.data.idUnit
-            })
-        }
-    }, [modalData])
-    const { idUser, fullName, account, password, idUnit } = formData
-    const { postUser, putUser } = useUser()
-    const handleChange = (e) => {
-        const { name, value } = e.target
-        setFormData((prevFormData) => ({
-            ...prevFormData,
-            [name]: value
-        }))
-    }
-    const handleAddUsers = () => {
-        const dataUsers = {
-            idUser,
-            fullName,
-            account,
-            password,
-            idUnit
-        }
-        if (!idUser || !fullName || !account || !password || !idUnit) {
-            setEmptyError("Vui lòng nhập đầy đủ thông tin")
-        } else {
-            dispatch(addUser({
-                data: {
-                    idUser,
-                    fullName,
-                    account,
-                    password,
-                    idUnit
-                }
-            }))
-            setFormData({
-                idUser: "",
-                fullName: "",
-                account: "",
-                password: "",
-                idUnit: ""
-            })
-            onCloseModal()
-            postUser(dataUsers)
-        }
-    }
-    const handleEditUser = () => {
-        dispatch(editUser({
-            id: modalData?.id,
-            data: {
-                idUser,
-                fullName,
-                account,
-                password,
-                idUnit
-            }
-        }))
-        putUser(formData, modalData?.id)
-        onCloseModal()
-    }
-    return (
-        <Modal
-            onClose={onCloseModal}
-            keepMounted
-            open={openModal}
-            aria-labelledby="keep-mounted-modal-title"
-            aria-describedby="keep-mounted-modal-description"
+const ModalAddUser = ({
+  openModaAdd,
+  onCloseModalAdd,
+  emtyError,
+  handleAddUser,
+}) => {
+  const dispatch = useDispatch();
+  const [selectUnit, setSelectUnit] = useState([]);
+  const [formData, setFormData] = useState({
+    idUser: "",
+    fullName: "",
+    username: "",
+    password: "",
+    password_confirmation: "",
+    idUnit: "",
+  });
+  const {
+    idUser,
+    fullName,
+    username,
+    password,
+    password_confirmation,
+    idUnit,
+  } = formData;
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+    }));
+  };
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await request("/api/units");
+        setSelectUnit(res?.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
+  return (
+    <Modal
+      onClose={onCloseModalAdd}
+      keepMounted
+      open={openModaAdd}
+      aria-labelledby="keep-mounted-modal-title"
+      aria-describedby="keep-mounted-modal-description"
+    >
+      <Box sx={styleModal}>
+        <Typography variant="h5">Thêm người dùng</Typography>
+        {emtyError && (
+          <span className="my-5 text-red-500">
+            Vui lòng nhập đầy đủ thông tin*
+          </span>
+        )}
+        <TextField
+          onChange={handleChange}
+          value={idUser}
+          name="idUser"
+          sx={{ margin: "16px 0", width: "100%" }}
+          id="outlined-basic"
+          label="Mã người dùng"
+          variant="outlined"
+        />
+        <TextField
+          onChange={handleChange}
+          value={fullName}
+          name="fullName"
+          sx={{ margin: "12px 0", width: "100%" }}
+          id="outlined-basic"
+          label="Họ và tên"
+          variant="outlined"
+        />
+        <TextField
+          onChange={handleChange}
+          value={username}
+          name="username"
+          sx={{ margin: "12px 0", width: "100%" }}
+          id="outlined-basic"
+          label="Tài khoản"
+          variant="outlined"
+        />
+        <TextField
+          onChange={handleChange}
+          value={password}
+          name="password"
+          sx={{ margin: "12px 0", width: "100%" }}
+          type="password"
+          id="outlined-basic"
+          label="Mật khẩu"
+          variant="outlined"
+        />
+        <TextField
+          onChange={handleChange}
+          value={password_confirmation}
+          name="password_confirmation"
+          sx={{ margin: "12px 0", width: "100%" }}
+          type="password"
+          id="outlined-basic"
+          label="Xác nhận mật khẩu"
+          variant="outlined"
+        />
+        <FormControl sx={{ width: "100%" }}>
+          <InputLabel id="demo-simple-select-label">Đơn vị</InputLabel>
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={idUnit}
+            label="Đơn vị"
+            onChange={handleChange}
+            name="idUnit"
+          >
+            {selectUnit?.map((item) => (
+              <MenuItem key={item?.idUnit} value={item?.idUnit}>
+                {item?.nameUnit}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        <Button
+          variant="text"
+          sx={{ margin: "24px 0", float: "right" }}
+          onClick={onCloseModalAdd}
         >
-            <Box sx={styleModal}>
-                <Typography variant="h5" >
-                    {modalName}
-                </Typography>
-                {emptyError && <span className='m-5 text-red-500'>{emptyError}</span>}
-                <TextField onChange={handleChange} value={idUser} name='idUser' sx={{ margin: "16px 0", width: "100%" }} id="outlined-basic" label="Mã người dùng" variant="outlined" />
-                <TextField onChange={handleChange} value={fullName} name='fullName' sx={{ margin: "12px 0", width: "100%" }} id="outlined-basic" label="Họ và tên" variant="outlined" />
-                <TextField onChange={handleChange} value={account} name='account' sx={{ margin: "12px 0", width: "100%" }} id="outlined-basic" label="Tài khoản" variant="outlined" />
-                <TextField onChange={handleChange} value={password} name='password' sx={{ margin: "12px 0", width: "100%" }} type='password' id="outlined-basic" label="Mật khẩu" variant="outlined" />
-                <TextField onChange={handleChange} value={idUnit} name='idUnit' sx={{ margin: "12px 0", width: "100%" }} id="outlined-basic" label="Mã đơn vị" variant="outlined" />
-                <Button variant="text" sx={{ margin: "24px 0", float: "right" }} onClick={onCloseModal}>Hủy Bỏ</Button>
-                {modalMode === "add" && <Button variant="contained" sx={{ margin: "24px 12px", float: "right" }} onClick={handleAddUsers}>Thêm</Button>}
-                {modalMode === "update" && <Button variant="contained" sx={{ margin: "24px 12px", float: "right" }} onClick={handleEditUser}>Sửa</Button>}
-            </Box>
-        </Modal>
-    )
-}
+          Hủy Bỏ
+        </Button>
+        <Button
+          variant="contained"
+          sx={{ margin: "24px 12px", float: "right" }}
+          onClick={() => {
+            handleAddUser(formData);
+          }}
+        >
+          Thêm
+        </Button>
+      </Box>
+    </Modal>
+  );
+};
 
-export default ModalUser
+export default ModalAddUser;
