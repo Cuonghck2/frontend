@@ -71,8 +71,7 @@ const SignUpPage = () => {
       !fullName ||
       !username ||
       !password ||
-      !password_confirmation ||
-      !idUnit
+      !password_confirmation
     ) {
       setEmptyError("Vui lòng nhập đầy đủ thông tin*");
     } else {

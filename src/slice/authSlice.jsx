@@ -3,9 +3,9 @@ import request from "../utils/request";
 
 export const signUserAsync = createAsyncThunk(
   "auth/signUserAsync",
-  async (usersData, thunkAPI) => {
+  async (authData, thunkAPI) => {
     try {
-      const res = await request.post("/api/register", usersData);
+      const res = await request.post("/api/auth/register", authData);
       return res?.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
@@ -14,9 +14,9 @@ export const signUserAsync = createAsyncThunk(
 );
 export const loginUserAsync = createAsyncThunk(
   "auth/loginUserAsync",
-  async (usersData, thunkAPI) => {
+  async (authData, thunkAPI) => {
     try {
-      const res = await request.post("/api/login", usersData);
+      const res = await request.post("/api/auth/login", authData);
       console.log(res);
       return res?.data;
     } catch (error) {
@@ -26,10 +26,9 @@ export const loginUserAsync = createAsyncThunk(
 );
 export const logoutUserAsync = createAsyncThunk(
   "auth/logoutUserAsync",
-  async (usersData, thunkAPI) => {
-    console.log(usersData);
+  async (authData, thunkAPI) => {
     try {
-      const res = await request.post("/api/logout", usersData);
+      const res = await request.post("/api/auth/logout");
       return res?.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
@@ -39,14 +38,14 @@ export const logoutUserAsync = createAsyncThunk(
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    users: [],
+    auth: [],
     token: null,
     isLoading: false,
     error: null,
   },
   reducers: {
     getUser: (state, action) => {
-      state.users = action.payload;
+      state.auth = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -56,7 +55,7 @@ const authSlice = createSlice({
       })
       .addCase(signUserAsync.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.users.push(action.payload);
+        state.auth.push(action.payload);
       })
       .addCase(signUserAsync.rejected, (state, action) => {
         state.isLoading = false;
@@ -67,7 +66,7 @@ const authSlice = createSlice({
       })
       .addCase(loginUserAsync.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.users = action.payload;
+        state.auth = action.payload;
       })
       .addCase(loginUserAsync.rejected, (state, action) => {
         state.isLoading = false;
@@ -78,7 +77,7 @@ const authSlice = createSlice({
       })
       .addCase(logoutUserAsync.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.users = action.payload;
+        state.auth = action.payload;
       })
       .addCase(logoutUserAsync.rejected, (state, action) => {
         state.isLoading = false;

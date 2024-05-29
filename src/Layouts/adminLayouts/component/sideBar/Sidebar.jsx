@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
+  AttachFile,
   Book,
   Category,
   Flag,
@@ -14,13 +15,18 @@ const SideBar = () => {
   const location = useLocation();
   const router = [
     {
+      path: "/dashboard",
+      text: "Thống kê",
+      icon: <PieChart className="text-[#d6e3e4]" />,
+    },
+    {
       path: "/update-user",
-      text: "Cập nhật người dùng",
+      text: "Quản lý người dùng",
       icon: <People className="text-[#d6e3e4]" />,
     },
     {
       path: "/update-categories",
-      text: "Cập nhật danh mục",
+      text: "Quản lý danh mục",
       icon: <Category className="text-[#d6e3e4]" />,
     },
     {
@@ -34,14 +40,14 @@ const SideBar = () => {
       icon: <Book className="text-[#d6e3e4]" />,
     },
     {
+      path: "/update-file",
+      text: "Quản lý tài liệu",
+      icon: <AttachFile className="text-[#d6e3e4]" />,
+    },
+    {
       path: "/report",
       text: "Báo cáo",
       icon: <Flag className="text-[#d6e3e4]" />,
-    },
-    {
-      path: "/dashboard",
-      text: "Thống kê",
-      icon: <PieChart className="text-[#d6e3e4]" />,
     },
   ];
   useEffect(() => {

@@ -46,7 +46,7 @@ const LoginPage = () => {
 
       if (res.payload.status === "success") {
         localStorage.setItem("token", res?.payload?.data?.token);
-        navigate("/");
+        navigate("/dashboard");
       } else {
         setErrorLogin(true);
       }
@@ -76,6 +76,24 @@ const LoginPage = () => {
           </Box>
         </Backdrop>
       )}
+      <Typography
+        variant="h6"
+        component="div"
+        sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+        onClick={() => navigate("/")}
+      >
+        <div className="flex items-center justify-center bg-[#0267ff]">
+          <img src="/public/Group-134.png" alt="" className="w-[100px]" />
+          <div className="flex flex-col items-center text-xl ">
+            <span className="text-[#feab36] text-3xl">
+              Bộ giáo dục và đào tạo
+            </span>
+            <span className="text-3xl text-white ml-3">
+              Trường Đại học Tài chính - Ngân hàng Hà Nội
+            </span>
+          </div>
+        </div>
+      </Typography>
       <Box
         sx={{
           width: "400px",
@@ -118,27 +136,15 @@ const LoginPage = () => {
           label="Mật khẩu"
           type="password"
         />
-        <Box sx={{ display: "flex", justifyContent: "end", mt: 2 }}>
-          <Box onClick={() => navigate("/signup")} sx={{ display: "flex" }}>
-            Bạn chưa có tài khoản?{" "}
-            <span className="text-[#9c27b0] text-lg font-medium hover:cursor-pointer">
-              Đăng ký
-            </span>
-          </Box>
-        </Box>
+
         <Button
           variant="contained"
+          type="submit"
           sx={{ width: "100%", marginTop: "20px" }}
           onClick={handleLogin}
         >
           Đăng nhập
         </Button>
-        <span
-          className="text-[#9c27b0] text-lg font-normal hover:cursor-pointer mt-2 float-right"
-          onClick={() => navigate("/")}
-        >
-          Quay lại trang chủ
-        </span>
       </Box>
     </>
   );

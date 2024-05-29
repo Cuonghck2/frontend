@@ -4,30 +4,27 @@ import routes from "../../router/routesAdmin";
 import DefaultLayouts from "../../Layouts/adminLayouts/defaultsLayout/DefaultLayout";
 
 const Admin = () => {
-  console.log(routes);
   return (
-    <BrowserRouter>
-      <Routes>
-        {routes.map((route, index) => {
-          let Layout = DefaultLayouts;
-          if (route.layout) {
-            Layout = route.layout;
-          }
-          const Page = route.component;
-          return (
-            <Route
-              key={index}
-              path={route.path}
-              element={
-                <Layout>
-                  <Page />
-                </Layout>
-              }
-            />
-          );
-        })}
-      </Routes>
-    </BrowserRouter>
+    <Routes>
+      {routes.map((route, index) => {
+        let Layout = DefaultLayouts;
+        if (route.layout) {
+          Layout = route.layout;
+        }
+        const Page = route.component;
+        return (
+          <Route
+            key={index}
+            path={route.path}
+            element={
+              <Layout>
+                <Page />
+              </Layout>
+            }
+          />
+        );
+      })}
+    </Routes>
   );
 };
 

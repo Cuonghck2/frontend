@@ -92,11 +92,21 @@ const UpdateTopics = () => {
 
   //addTopics
   const handleAddTopics = (data) => {
-    const { idTopic, nameTopic, timeStart, timeEnd } = data;
+    const { idTopic, nameTopic } = data;
     if (!idTopic || !nameTopic) {
       setEmtyError(true);
     } else {
       dispatch(addTopicsAsync(data));
+      data.idTopic = "";
+      data.nameTopic = "";
+      data.timeEnd = "";
+      data.timeStart = "";
+      data.typeTopic = "";
+      data.idResult = "";
+      data.idLeader = "";
+      data.idGrade = "";
+      data.idLevel = "";
+
       setOpenModalAdd(false);
     }
   };

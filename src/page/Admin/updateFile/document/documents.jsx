@@ -1,5 +1,12 @@
 /* eslint-disable no-unused-vars */
-import { Add, Delete, Edit, Save } from "@mui/icons-material";
+import {
+  Add,
+  CloudUpload,
+  Delete,
+  Download,
+  Edit,
+  Save,
+} from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -15,7 +22,8 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
+import { useDropzone } from "react-dropzone";
 import request from "../../../../utils/request";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
@@ -24,115 +32,110 @@ import {
   StyledTableRow,
 } from "../../../../Layouts/adminLayouts/component/customMUI/customMUI";
 import {
-  addMemberSync,
-  deleteMemberSync,
-  listMember,
-  uppdateMemberSync,
-} from "../../../../slice/memberSlice";
+  addDocsAsync,
+  deleteDocsAsync,
+  listDocs,
+} from "../../../../slice/docsSlice";
 
-const Member = () => {
+const Document = () => {
   const { id } = useParams();
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [editMember, setEditMember] = useState(null);
   const [emtyError, setEmtyError] = useState(false);
   const [confirmDel, setConfirmDel] = useState(false);
-  const [selectedIdMember, setSelectedIdMember] = useState(null);
+  const [selectIdDoc, setSelectIdDoc] = useState("");
   const [formData, setFormData] = useState({
-    idMember: "",
-    nameMember: "",
-    taskMember: "",
-    idLeader: id,
+    typeDocs: "",
+    file: "",
+    idTopic: id,
   });
-  console.log(formData);
-  const { members } = useSelector((state) => state.members);
+  const { docs } = useSelector((state) => state.docs);
   const dispatch = useDispatch();
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await request(`/api/members/${id}`);
-        dispatch(listMember(res?.data));
+        const res = await request(`/api/document/${id}`);
+        dispatch(listDocs(res?.data));
       } catch (error) {
         console.log(error);
       }
     };
+
     fetchData();
   }, []);
-  const { idMember, nameMember, taskMember } = formData;
+  const { typeDocs, file } = formData;
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
-  //add member
-  const handleAddMember = async () => {
-    if (!idMember || !nameMember || !taskMember) {
-      setEmtyError(true);
-    } else {
-      dispatch(addMemberSync(formData));
-      setFormData({
-        idMember: "",
-        nameMember: "",
-        taskMember: "",
+  const handleDownload = async (id) => {
+    try {
+      const response = await request.get(`/api/document/download/${id}`, {
+        responseType: "blob",
       });
-    }
-  };
+      console.log(response);
 
-  // edit member
-  const uppdateMember = (id) => {
-    const memberSelected = members.find((member) => member.idMember === id);
-    setEditMember(memberSelected);
-  };
-  const handleSaveMember = async () => {
-    if (!idMember || !nameMember || !taskMember) {
-      setEmtyError(true);
-    } else {
-      dispatch(
-        uppdateMemberSync({
-          idMember: editMember.idMember,
-          nameMember: nameMember,
-          taskMember: taskMember,
-          idLeader: id,
-        })
-      );
-      setEditMember(null);
-      setFormData({
-        idMember: "",
-        nameMember: "",
-        taskMember: "",
+      // Xử lý nội dung tệp tin
+      const blob = new Blob([response.data], {
+        type: response.headers["content-type"],
       });
+      const url = window.URL.createObjectURL(blob);
+
+      // Tạo một thẻ a để tải xuống tệp tin
+      const link = document.createElement("a");
+      link.href = url;
+
+      // Lấy tên tệp tin từ response headers
+      const contentDisposition = response.headers["content-disposition"];
+      let fileName = "TaiLieu.doc";
+      if (contentDisposition) {
+        const fileNameRegex = /filename[^;=\n]*=((['"]).*?\2|[^;\n]*)/;
+        const match = fileNameRegex.exec(contentDisposition);
+        if (match != null && match[1]) {
+          fileName = match[1].replace(/['"]/g, "");
+        }
+      }
+      link.download = fileName;
+
+      // Kích hoạt sự kiện click để tải xuống tệp tin
+      link.click();
+
+      // Giải phóng URL đã tạo ra
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.log(error);
     }
   };
-  const cancelEdit = () => {
-    setEditMember(null);
+  //add
+  const handleAddDocs = () => {
+    dispatch(addDocsAsync(formData));
     setFormData({
-      idMember: "",
-      nameMember: "",
-      taskMember: "",
+      typeDocs: "",
+      file: "",
+      idTopic: id,
     });
   };
-
-  useEffect(() => {
-    if (editMember) {
-      setFormData({
-        idMember: editMember?.idMember,
-        nameMember: editMember?.nameMember,
-        taskMember: editMember?.taskMember,
-      });
-    }
-  }, [editMember]);
-  // delete member
+  const onDrop = useCallback(
+    (acceptedFiles) => {
+      setFormData({ ...formData, file: acceptedFiles[0] });
+    },
+    [formData]
+  );
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop,
+  });
   const handelOpenDelete = (id) => {
     setConfirmDel(true);
-    setSelectedIdMember(id);
+    setSelectIdDoc(id);
+  };
+  const handleDelete = async () => {
+    dispatch(deleteDocsAsync(selectIdDoc));
+    setConfirmDel(false);
   };
   const handleCancelDel = () => {
     setConfirmDel(false);
-    setSelectedIdMember(null);
   };
 
-  const handleDeleteMember = async () => {
-    dispatch(deleteMemberSync(selectedIdMember));
-    setConfirmDel(false);
-  };
   //pagination
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
@@ -147,7 +150,7 @@ const Member = () => {
         variant="h4"
         sx={{ marginBottom: "20px", textAlign: "center" }}
       >
-        Thành viên
+        Tài liệu
       </Typography>
       <div className="grid grid-cols-10">
         <div className="col-span-3 mx-6">
@@ -158,63 +161,30 @@ const Member = () => {
           )}
           <div className="flex flex-col w-max-[400px] mt-[16px]">
             <TextField
-              name="idMember"
-              sx={{ marginBottom: "16px" }}
-              value={idMember}
-              id="outlined-basic"
-              label="Mã thành viên"
-              variant="outlined"
-              onChange={handleChange}
-            />
-            <TextField
-              name="nameMember"
-              value={nameMember}
-              onChange={handleChange}
+              name="typeDocs"
               sx={{ marginBottom: "16px" }}
               id="outlined-basic"
-              label="Tên thành viên"
+              label="Loại tài liệu"
               variant="outlined"
-            />
-            <TextField
-              name="taskMember"
-              value={taskMember}
               onChange={handleChange}
-              sx={{ marginBottom: "16px" }}
-              id="outlined-multiline-static"
-              label="Nhiệm vụ"
-              multiline
-              rows={4}
-              defaultValue=""
-              variant="outlined"
             />
-            {!editMember ? (
-              <Button
-                variant="contained"
-                sx={{ margin: "24px 0", float: "right" }}
-                startIcon={<Add />}
-                onClick={handleAddMember}
-              >
-                Thêm
-              </Button>
-            ) : (
-              <div className="flexitems-center">
-                <Button
-                  variant="outlined"
-                  sx={{ margin: "24px 16px", float: "right" }}
-                  onClick={cancelEdit}
-                >
-                  Hủy
-                </Button>
-                <Button
-                  variant="contained"
-                  sx={{ margin: "24px 0", float: "right" }}
-                  startIcon={<Save />}
-                  onClick={handleSaveMember}
-                >
-                  Lưu
-                </Button>
+            <div {...getRootProps()}>
+              <input {...getInputProps()} />
+              <div className="flex items-center hover:cursor-pointer">
+                <IconButton>
+                  <CloudUpload />
+                </IconButton>
+                <p>Chọn tệp tải lên</p>
               </div>
-            )}
+            </div>
+            <Button
+              variant="contained"
+              sx={{ margin: "24px 0", float: "right" }}
+              startIcon={<Add />}
+              onClick={handleAddDocs}
+            >
+              Thêm
+            </Button>
           </div>
         </div>
         <div className="col-span-7">
@@ -222,40 +192,34 @@ const Member = () => {
             <Table stickyHeader aria-label="custom-table">
               <TableHead>
                 <TableRow>
-                  <StyleTableCell align="center">Mã thành viên</StyleTableCell>
-                  <StyleTableCell align="center">Tên thành viên</StyleTableCell>
-                  <StyleTableCell align="center">Nhiệm vụ</StyleTableCell>
+                  <StyleTableCell align="center">STT</StyleTableCell>
+                  <StyleTableCell align="center">Loại tài liệu</StyleTableCell>
+                  <StyleTableCell align="center">Tên tài liệu</StyleTableCell>
                   <StyleTableCell align="center">Chức năng</StyleTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
-                {members?.map((member, index) => (
+                {docs?.map((item, index) => (
                   <StyledTableRow key={index}>
+                    <StyleTableCell align="center">{index + 1}</StyleTableCell>
                     <StyleTableCell align="center">
-                      {member?.idMember}
+                      {item?.typeDocs}
                     </StyleTableCell>
-                    <StyleTableCell align="center">
-                      {member?.nameMember}
-                    </StyleTableCell>
-                    <StyleTableCell align="center">
-                      {member?.taskMember}
-                    </StyleTableCell>
+                    <StyleTableCell align="center">{item?.file}</StyleTableCell>
                     <StyleTableCell align="center">
                       <IconButton
                         color="primary"
                         size="medium"
                         variant="text"
-                        onClick={() => {
-                          uppdateMember(member?.idMember);
-                        }}
+                        onClick={() => handleDownload(item?.id)}
                       >
-                        <Edit />
+                        <Download />
                       </IconButton>
                       <IconButton
                         color="primary"
                         size="medium"
                         variant="text"
-                        onClick={() => handelOpenDelete(member?.idMember)}
+                        onClick={() => handelOpenDelete(item?.id)}
                       >
                         <Delete />
                       </IconButton>
@@ -289,11 +253,9 @@ const Member = () => {
                           Hủy Bỏ
                         </Button>
                         <Button
-                          onClick={() => {
-                            handleDeleteMember();
-                          }}
                           variant="contained"
                           sx={{ margin: "24px 12px", float: "right" }}
+                          onClick={handleDelete}
                         >
                           Xóa
                         </Button>
@@ -307,7 +269,7 @@ const Member = () => {
           <TablePagination
             rowsPerPageOptions={[5, 10, 15]}
             component="div"
-            count={members.length || 0}
+            count={docs?.length || 0}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}
@@ -319,4 +281,4 @@ const Member = () => {
   );
 };
 
-export default Member;
+export default Document;

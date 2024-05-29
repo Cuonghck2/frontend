@@ -59,7 +59,7 @@ const UpdateUsers = () => {
   const fetchData = async () => {
     try {
       setIsLoading(true);
-      const res = await request("/api/users");
+      const res = await request("/api/auth/users");
       dispatch(listUsers(res?.data));
     } catch (error) {
       console.log(error);

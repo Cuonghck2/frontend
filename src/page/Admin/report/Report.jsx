@@ -2,6 +2,7 @@
 import {
   Backdrop,
   Box,
+  Button,
   CircularProgress,
   FormControl,
   InputLabel,
@@ -15,7 +16,9 @@ import {
   TablePagination,
   TableRow,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import { saveAs } from "file-saver";
+import { utils, write } from "xlsx";
+import { useEffect, useState } from "react";
 import {
   StyleTableCell,
   StyledTableRow,
@@ -24,13 +27,17 @@ import { useDispatch, useSelector } from "react-redux";
 import request from "../../../utils/request";
 import { listTopics } from "../../../slice/topicsSlice";
 import dayjs from "dayjs";
+import { removeDuplicates } from "../../../utils/test";
+import { FileUpload } from "@mui/icons-material";
 
 const Report = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [isLoading, setIsLoading] = useState(true);
   const { topics } = useSelector((state) => state.topics);
+
   const [filtersData, setFiltersData] = useState([]);
+  console.log(filtersData);
   const dispatch = useDispatch();
   useEffect(() => {
     const fetchData = async () => {
@@ -46,26 +53,72 @@ const Report = () => {
     };
     fetchData();
   }, []);
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    return `${date.getDate().toString().padStart(2, "0")}/${(
+      date.getMonth() + 1
+    )
+      .toString()
+      .padStart(2, "0")}/${date.getFullYear()}`;
+  };
+  const excelExport = (data, fileName) => {
+    console.log(data);
+    const formattedData = data.map((item) => ({
+      "Mã đề tài": item?.idTopic,
+      "Tên đề tài": item?.nameTopic,
+      "Tên chủ nhiệm": item.leader?.nameLeader,
+      "Loại đề tài": item?.typeTopic,
+      "Đơn vị": item.leader?.unit?.nameUnit,
+      "Thuộc năm": dayjs(item.timeStart).format("YYYY"),
+      "Kết quản nghiệm thu": item.typeResult?.nameResult,
+      "Cấp giải thưởng": item.awardGrade?.nameGrade,
+      "Mức giải thưởng": item.awardLevel?.nameLevel,
+    }));
+    const worksheet = utils.json_to_sheet(formattedData);
+    const workbook = utils.book_new();
+    utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    const excelBuffer = write(workbook, {
+      bookType: "xlsx",
+      type: "array",
+    });
+    const blob = new Blob([excelBuffer], {
+      type: "application/octet-stream",
+    });
+    saveAs(blob, `${fileName}.xlsx`);
+  };
   const TYPE = ["Sinh viên", "Giảng viên"];
-  const YEAR = topics.map((item) => {
-    return dayjs(item?.timeStart).format("YYYY");
-  });
-  const removeDuplicateYear = Array.from(new Set(YEAR));
-  const UNIT = topics.map((item) => item?.leader?.unit?.nameUnit);
-  const removeDuplicateUnit = Array.from(new Set(UNIT));
 
+  const YEAR = removeDuplicates(
+    topics.map((item) => {
+      return dayjs(item?.timeStart).format("YYYY");
+    })
+  );
+
+  const UNIT = removeDuplicates(
+    topics.map((item) => item?.leader?.unit?.nameUnit)
+  );
+  useEffect(() => {
+    setDataFilter((prev) => ({
+      ...prev,
+      removeDuplicateYear: YEAR,
+      removeDuplicateUnit: UNIT,
+    }));
+    // eslint-disable-next-line no-undef
+  }, [topics]);
   const [dataFilter, setDataFilter] = useState({
     TYPE,
-    removeDuplicateYear,
-    removeDuplicateUnit,
+    removeDuplicateYear: [],
+    removeDuplicateUnit: [],
   });
+
   const handleChange = (e) => {
     const { value, name } = e.target;
     const object = {
       TYPE,
-      removeDuplicateYear,
-      removeDuplicateUnit,
+      removeDuplicateYear: dataFilter.removeDuplicateYear,
+      removeDuplicateUnit: dataFilter.removeDuplicateUnit,
     };
+
     if (value === "ALL") {
       setDataFilter((prev) => ({
         ...prev,
@@ -73,6 +126,7 @@ const Report = () => {
       }));
     } else {
       setDataFilter((prev) => ({ ...prev, [name]: [value] }));
+      console.log(dataFilter);
     }
   };
 
@@ -118,6 +172,14 @@ const Report = () => {
           </Box>
         </Backdrop>
       )}
+      <Button
+        variant="contained"
+        color="success"
+        onClick={() => excelExport(filtersData, "Báo cáo")}
+      >
+        <FileUpload />
+        Xuất file
+      </Button>
       <FormControl size="small" sx={{ m: 1, minWidth: 200, float: "right" }}>
         <InputLabel id="demo-simple-select-label">Loại</InputLabel>
         <Select
@@ -149,13 +211,14 @@ const Report = () => {
           onChange={handleChange}
         >
           <MenuItem value={"ALL"}>Tất cả</MenuItem>
-          {removeDuplicateUnit.map((title, index) => {
-            return (
-              <MenuItem key={index} value={title}>
-                {title}
-              </MenuItem>
-            );
-          })}
+          {dataFilter.removeDuplicateUnit.length > 0 &&
+            dataFilter.removeDuplicateUnit?.map((title, index) => {
+              return (
+                <MenuItem key={index} value={title}>
+                  {title}
+                </MenuItem>
+              );
+            })}
         </Select>
       </FormControl>
       <FormControl size="small" sx={{ m: 1, minWidth: 200, float: "right" }}>
@@ -169,13 +232,14 @@ const Report = () => {
           onChange={handleChange}
         >
           <MenuItem value={"ALL"}>Tất cả</MenuItem>
-          {removeDuplicateYear.map((title, index) => {
-            return (
-              <MenuItem key={index} value={title}>
-                {title}
-              </MenuItem>
-            );
-          })}
+          {YEAR.length > 0 &&
+            YEAR.map((title, index) => {
+              return (
+                <MenuItem key={index} value={title}>
+                  {title}
+                </MenuItem>
+              );
+            })}
         </Select>
       </FormControl>
       <Paper sx={{ width: "100%", overflow: "hidden" }}>

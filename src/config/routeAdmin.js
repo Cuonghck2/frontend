@@ -8,6 +8,12 @@ const routeAdmin = {
       member: "members/:id",
     },
   },
+  updateFile: {
+    path: "/update-file",
+    children: {
+      document: "documents/:id",
+    },
+  },
   report: "/report",
   dashboard: "/dashboard",
 };

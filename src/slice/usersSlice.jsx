@@ -4,7 +4,7 @@ export const addUserAsync = createAsyncThunk(
   "users/addUserAsync",
   async (usersData, thunkAPI) => {
     try {
-      const res = await request.post("/api/register", usersData);
+      const res = await request.post("/api/auth/register", usersData);
       return res?.data?.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error);
@@ -16,7 +16,7 @@ export const updateUserAsync = createAsyncThunk(
   async (usersData, thunkAPI) => {
     try {
       const res = await request.put(
-        `/api/users/${usersData.idUser}`,
+        `/api/auth/users/${usersData.idUser}`,
         usersData
       );
       console.log(res?.data);
@@ -30,7 +30,7 @@ export const deleteUserAsync = createAsyncThunk(
   "users/deleteUserAsync",
   async (idUser, thunkAPI) => {
     try {
-      const res = await request.delete(`/api/users/${idUser}`);
+      const res = await request.delete(`/api/auth/users/${idUser}`);
       return res?.data;
     } catch (error) {
       return thunkAPI.rejectWithValue(error);

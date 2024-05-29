@@ -9,10 +9,11 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import React, { useState } from "react";
-import { useDispatch } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { logoutUserAsync } from "../../../../slice/authSlice";
+import request from "../../../../utils/request";
+import { getUser, logoutUserAsync } from "../../../../slice/authSlice";
 import { Person } from "@mui/icons-material";
 
 const Header = ({ setIsLoading, setIsLogin, isLogin, setStudentTopic }) => {
@@ -22,6 +23,21 @@ const Header = ({ setIsLoading, setIsLogin, isLogin, setStudentTopic }) => {
   const open = Boolean(anchorEl);
   const [anchorElRegister, setAnchorElRegister] = useState(null);
   const openRegister = Boolean(anchorElRegister);
+  const { auth } = useSelector((state) => state.auth);
+  console.log(auth);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setIsLoading(true);
+        const res = await request.post("/api/auth/profile");
+        dispatch(getUser(res?.data));
+        setIsLoading(false);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchData();
+  }, []);
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -104,12 +120,12 @@ const Header = ({ setIsLoading, setIsLogin, isLogin, setStudentTopic }) => {
                 >
                   <div className="flex items-center">
                     <Person sx={{ fontSize: "25px", color: "#fff" }} />
-                    <span className="ml-3">Nguyễn Đức Cương</span>
+                    <span className="ml-3">{auth?.fullName}</span>
                   </div>
                 </Button>
                 <Menu
                   id="basic-menu"
-                  sx={{ width: "200px" }}
+                  sx={{ width: "400px" }}
                   anchorEl={anchorEl}
                   open={open}
                   onClose={handleClose}
@@ -125,12 +141,13 @@ const Header = ({ setIsLoading, setIsLogin, isLogin, setStudentTopic }) => {
                     "aria-labelledby": "basic-button",
                   }}
                 >
-                  <MenuItem onClick={handleClose}>Trang cá nhân</MenuItem>
-                  <MenuItem>
-                    <a href="http://localhost:5173/update-user">
-                      Trang quản trị
-                    </a>
-                  </MenuItem>
+                  {auth?.username === "admin" && (
+                    <MenuItem>
+                      <a href="http://localhost:5173/update-user">
+                        Trang quản trị
+                      </a>
+                    </MenuItem>
+                  )}
                   <MenuItem onClick={handleLogout}>Đăng xuất</MenuItem>
                 </Menu>
               </div>

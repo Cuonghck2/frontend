@@ -24,16 +24,17 @@ import { useDispatch, useSelector } from "react-redux";
 import dayjs from "dayjs";
 import request from "../../../utils/request";
 import { listTopics } from "../../../slice/topicsSlice";
+import { removeDuplicates } from "../../../utils/test";
 const DashBoard = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { topics } = useSelector((state) => state.topics);
   const [filtersData, setFiltersData] = useState([]);
+  //Thống kê số lượng theo 4 tiêu chí
   const [totalCount, setTotalCount] = useState(0);
   const [totalUnit, setTotalUnit] = useState(0);
   const [totalStudent, setTotalStudent] = useState(0);
   const [totalTeacher, setTotalTeacher] = useState(0);
-  const [chartData, setChartData] = useState([]);
-
+  //////////////////////////////////////////////////////
   const dispatch = useDispatch();
   useEffect(() => {
     const fetchData = async () => {
@@ -49,24 +50,41 @@ const DashBoard = () => {
     };
     fetchData();
   }, []);
-  const YEAR = topics.map((item) => {
-    return dayjs(item?.timeStart).format("YYYY");
-  });
-  const removeDuplicateYear = Array.from(new Set(YEAR));
-  const sortedYears = removeDuplicateYear.sort((a, b) => a - b);
-  const UNIT = topics.map((item) => item?.leader?.unit?.nameUnit);
-  const removeDuplicateUnit = Array.from(new Set(UNIT));
+  //Start filter
+
+  useEffect(() => {
+    setDataFilter((prev) => ({
+      ...prev,
+      removeDuplicateYear: YEAR,
+      removeDuplicateUnit: UNIT,
+    }));
+  }, [topics]);
+
+  const YEAR = removeDuplicates(
+    topics.map((item) => {
+      return dayjs(item?.timeStart).format("YYYY");
+    })
+  );
+  // const removeDuplicateYear = Array.from(new Set(YEAR));
+  const sortedYears = YEAR.sort((a, b) => a - b);
+  const UNIT = removeDuplicates(
+    topics.map((item) => item?.leader?.unit?.nameUnit)
+  );
+  // const removeDuplicateUnit = Array.from(new Set(UNIT));
 
   const [dataFilter, setDataFilter] = useState({
-    removeDuplicateYear,
-    removeDuplicateUnit,
+    removeDuplicateYear: null,
+    removeDuplicateUnit: null,
   });
+
   const handleChange = (e) => {
     const { value, name } = e.target;
     const object = {
-      removeDuplicateYear,
-      removeDuplicateUnit,
+      removeDuplicateYear: YEAR,
+      removeDuplicateUnit: UNIT,
     };
+    console.log({ object, name, test: object[name] });
+    console.log("🚀 ~ handleChange ~ object:", object);
     if (value === "ALL") {
       setDataFilter((prev) => ({
         ...prev,
@@ -80,12 +98,13 @@ const DashBoard = () => {
   useEffect(() => {
     const dataFiltered = topics.filter((item) => {
       return (
-        dataFilter.removeDuplicateYear.includes(
+        dataFilter.removeDuplicateYear?.includes(
           dayjs(item?.timeStart).format("YYYY")
         ) &&
         dataFilter.removeDuplicateUnit.includes(item?.leader?.unit?.nameUnit)
       );
     });
+
     setTotalCount(dataFiltered.length);
     setFiltersData(dataFiltered);
   }, [topics, dataFilter]);
@@ -108,7 +127,9 @@ const DashBoard = () => {
     );
     setTotalTeacher(filterTeacher.length);
   }, [filtersData, totalTeacher]);
-  //Chart
+  //End filter
+
+  //Chart col
   const chartSetting = {
     yAxis: [],
     width: 700,
@@ -119,7 +140,6 @@ const DashBoard = () => {
       },
     },
   };
-
   const yearCounts = useMemo(() => {
     const counts = {};
     filtersData.forEach((item) => {
@@ -153,7 +173,6 @@ const DashBoard = () => {
 
     return teacherCounts;
   }, [filtersData]);
-  console.log("totalTeacherCounts", totalTeacherCounts);
   const dataset = sortedYears.map((year) => {
     const totalTopic = yearCounts[year] || 0;
     const student = totalStudentCounts[year] || 0;
@@ -166,7 +185,9 @@ const DashBoard = () => {
       teacher,
     };
   });
-  console.log(dataset);
+  //End chart col
+
+  //Chart Pie
   const unitCounts = useMemo(() => {
     const countUnit = {};
     filtersData.forEach((item) => {
@@ -175,10 +196,11 @@ const DashBoard = () => {
     });
     return countUnit;
   }, [filtersData]);
+
   const colors = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042", "#FF4242"];
   const defaultDataUnit = [];
-  const dataUnit = removeDuplicateUnit
-    ? removeDuplicateUnit.map((unit, index) => {
+  const dataUnit = UNIT
+    ? UNIT.map((unit, index) => {
         const totalTopic = unitCounts[unit] || 0;
         const color = colors[index % colors.length];
         return {
@@ -188,7 +210,6 @@ const DashBoard = () => {
         };
       })
     : defaultDataUnit;
-
   const data = dataUnit;
   const sizing = {
     margin: { right: 5 },
@@ -199,8 +220,9 @@ const DashBoard = () => {
 
   const getArcLabel = (params) => {
     const percent = params.value / TOTAL;
-    return `${(percent * 100).toFixed(0)}%`;
+    return `${(percent * 100).toFixed(0)}%` || "";
   };
+  //End chart pie
   return (
     <div className="flex flex-col">
       {isLoading && (
@@ -234,7 +256,7 @@ const DashBoard = () => {
             onChange={handleChange}
           >
             <MenuItem value={"ALL"}>Tất cả</MenuItem>
-            {removeDuplicateUnit.map((title, index) => {
+            {UNIT.map((title, index) => {
               return (
                 <MenuItem key={index} value={title}>
                   {title}
@@ -322,37 +344,41 @@ const DashBoard = () => {
           <h5 className="text-center my-5 text-2xl font-medium">
             Thống kê đề tài sinh viên và giảng viên
           </h5>
-          <BarChart
-            dataset={dataset}
-            xAxis={[{ scaleType: "band", dataKey: "year" }]}
-            series={[
-              { dataKey: "totalTopic", label: "Tổng số đề tài" },
-              { dataKey: "student", label: "Sinh viên" },
-              { dataKey: "teacher", label: "Giảng viên" },
-            ]}
-            {...chartSetting}
-          />
+          {dataset.length > 0 && (
+            <BarChart
+              dataset={dataset || []}
+              xAxis={[{ scaleType: "band", dataKey: "year" }]}
+              series={[
+                { dataKey: "totalTopic", label: "Tổng số đề tài" },
+                { dataKey: "student", label: "Sinh viên" },
+                { dataKey: "teacher", label: "Giảng viên" },
+              ]}
+              {...(chartSetting || {})}
+            />
+          )}
         </div>
         <div className="rounded-md shadow-lg">
           <h5 className="text-center my-5 text-2xl font-medium">
             Thống kê đề tài các viện
           </h5>
-          <PieChart
-            series={[
-              {
-                outerRadius: 150,
-                data,
-                arcLabel: getArcLabel,
-              },
-            ]}
-            sx={{
-              [`& .${pieArcLabelClasses.root}`]: {
-                fill: "white",
-                fontSize: 14,
-              },
-            }}
-            {...sizing}
-          />
+          {dataset.length > 0 && (
+            <PieChart
+              series={[
+                {
+                  outerRadius: 150,
+                  data,
+                  arcLabel: getArcLabel,
+                },
+              ]}
+              sx={{
+                [`& .${pieArcLabelClasses.root}`]: {
+                  fill: "white",
+                  fontSize: 14,
+                },
+              }}
+              {...sizing}
+            />
+          )}
         </div>
       </div>
     </div>

@@ -19,7 +19,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import request from "../../../../utils/request";
-import { useTheme } from "@emotion/react";
+import { DateField } from "@mui/x-date-pickers";
 
 const styleModal = {
   position: "absolute",
@@ -136,7 +136,7 @@ const ModalAddTopics = ({
         <Typography variant="h5" sx={{ marginBottom: "15px" }}>
           Thêm đề tài
         </Typography>
-        {emtyError &&  (
+        {emtyError && (
           <span style={{ marginBottom: "15px", color: "red" }}>
             Vui lòng nhập đầy đủ thông tin*
           </span>
@@ -175,16 +175,16 @@ const ModalAddTopics = ({
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer
                   sx={{
-                    width: "100%",
                     margin: "16px 0 16px 0",
                   }}
-                  components={["DatePicker"]}
+                  components={["DateField"]}
                 >
-                  <DatePicker
-                    disablePast
+                  <DateField
                     onChange={handleChangeTimeStart}
-                    value={dayjs(timeStart)}
-                    label="Bắt đầu"
+                    sx={{ width: "1000px" }}
+                    label="Ngày bắt đầu"
+                    value={timeStart}
+                    format="DD/MM/YYYY"
                   />
                 </DemoContainer>
               </LocalizationProvider>
@@ -221,13 +221,14 @@ const ModalAddTopics = ({
                     width: "100%",
                     margin: "16px 0 16px 0",
                   }}
-                  components={["DatePicker"]}
+                  components={["DateField"]}
                 >
-                  <DatePicker
-                    disablePast
+                  <DateField
                     onChange={handleChangeTimeEnd}
-                    value={dayjs(timeEnd)}
-                    label="Kết thúc"
+                    value={timeEnd}
+                    format="DD/MM/YYYY"
+                    sx={{ width: "1000px" }}
+                    label="Ngày kết thúc"
                   />
                 </DemoContainer>
               </LocalizationProvider>

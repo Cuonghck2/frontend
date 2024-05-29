@@ -19,6 +19,7 @@ import { DemoContainer } from "@mui/x-date-pickers/internals/demo";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { DateField } from "@mui/x-date-pickers";
 
 const styleModal = {
   position: "absolute",
@@ -127,14 +128,14 @@ const ModalEditTopics = ({
   const handleChangeTimeStart = (date) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      timeStart: dayjs(date).format("DD/MM/YYYY"),
+      timeStart: date,
     }));
   };
 
   const handleChangeTimeEnd = (date) => {
     setFormData((prevFormData) => ({
       ...prevFormData,
-      timeEnd: dayjs(date).format("DD/MM/YYYY"),
+      timeEnd: date,
     }));
   };
   const handleChange = (e) => {
@@ -185,16 +186,16 @@ const ModalEditTopics = ({
               <LocalizationProvider dateAdapter={AdapterDayjs}>
                 <DemoContainer
                   sx={{
-                    width: "100%",
                     margin: "16px 0 16px 0",
                   }}
-                  components={["DatePicker"]}
+                  components={["DateField"]}
                 >
-                  <DatePicker
-                    disablePast
+                  <DateField
                     onChange={handleChangeTimeStart}
+                    sx={{ width: "1000px" }}
+                    label="Ngày bắt đầu"
                     value={dayjs(timeStart)}
-                    label="Bắt đầu"
+                    format="DD/MM/YYYY"
                   />
                 </DemoContainer>
               </LocalizationProvider>
@@ -209,7 +210,7 @@ const ModalEditTopics = ({
                 label="Tên đề tài"
                 variant="outlined"
               />
-              <FormControl sx={{ width: "100%" }}>
+              <FormControl sx={{ width: "100%", margin: "16px 0" }}>
                 <InputLabel id="demo-simple-select-label">
                   Loại đề tài
                 </InputLabel>
@@ -231,13 +232,14 @@ const ModalEditTopics = ({
                     width: "100%",
                     margin: "16px 0 16px 0",
                   }}
-                  components={["DatePicker"]}
+                  components={["DateField"]}
                 >
-                  <DatePicker
-                    disablePast
+                  <DateField
                     onChange={handleChangeTimeEnd}
                     value={dayjs(timeEnd)}
-                    label="Kết thúc"
+                    format="DD/MM/YYYY"
+                    sx={{ width: "1000px" }}
+                    label="Ngày kết thúc"
                   />
                 </DemoContainer>
               </LocalizationProvider>
